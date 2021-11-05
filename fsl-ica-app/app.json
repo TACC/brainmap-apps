@@ -1,0 +1,69 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.stampede2.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "tacc.work.wallen",
+  "helpURI": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/MELODIC",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "MELODIC ( Multivariate Exploratory Linear Optimized Decomposition into Independent Components ) 3.0 uses Independent Component Analysis to decompose a single or multiple 4D data sets into different spatial and temporal components. For ICA group analysis, MELODIC uses either Tensorial Independent Component Analysis (TICA, where data is decomposed into spatial maps, time courses and subject/session modes) or a simpler temporal concatenation approach. MELODIC can pick out different activation and artefactual components without any explicit time series model being specified.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "12:00:00",
+  "inputs": [    {
+    "id": "4dimage",
+    "details": {
+      "label": "Input time series image file",
+      "required": true
+    },
+    "semantics": {}
+  }],
+  "parameters": [
+    {
+      "id": "mask_file",
+      "value": {
+        "default": "MNI152_wb.nii",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "mask file",
+        "description": "File name of mask for thresholding. Options are: MNI152_wb.nii, MNI152_wb_dil.nii, Tal_wb.nii, Tal_wb_dil.nii"
+      }
+    },
+    {
+      "id": "dim_red",
+      "value": {
+        "default": "20",
+        "type": "string",
+        "visible": true,
+        "required": false
+      },
+      "details": {
+        "label": "dimensionality reduction",
+        "description": "dimensionality reduction into #num dimensions"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
