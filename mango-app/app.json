@@ -1,0 +1,36 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.stampede2.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "tacc.work.wallen",
+  "helpURI": "http://rii.uthscsa.edu/mango/mango.html",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "Mango – short for Multi-image Analysis GUI – is a viewer for medical research images. It provides analysis tools and a user interface to navigate image volumes. Please name the job 'dcvserver' in order to get this to work. Once the job is running, click on Data Files => My Data (Work) and look for the file called Mango_dcvserver.txt for connection instructions.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "02:00:00",
+  "inputs": [],
+  "parameters": [
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
