@@ -8,13 +8,13 @@
   "helpURI": "http://rii.uthscsa.edu/mango/mango.html",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": "Mango – short for Multi-image Analysis GUI – is a viewer for medical research images. It provides analysis tools and a user interface to navigate image volumes. Please name the job 'dcvserver' in order to get this to work. Once the job is running, click on Data Files => My Data (Work) and look for the file called Mango_dcvserver.txt for connection instructions.",
+  "longDescription": "Mango – short for Multi-image Analysis GUI – is a viewer for medical research images. It provides analysis tools and a user interface to navigate image volumes. NOTE: Once the job is running, click on Data Files => My Data (Work) and look for the file called Mango_dcvserver.txt for connection instructions.",
   "modules": [
     "load tacc-singularity"
   ],
   "ontology": [],
   "parallelism": "SERIAL",
-  "tags": [],
+  "tags": ["DCV"],
   "templatePath": "runner.sh",
   "testPath": "tester.sh",
   "version": "{{ app.version }}",

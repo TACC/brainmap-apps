@@ -8,13 +8,13 @@
   "helpURI": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FSLeyes",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": "FSLeyes (pronounced fossilise) is the FSL image viewer, released with FSL 5.0.10 onwards.\n\nPlease name the job 'dcvserver' in order to get this to work. Once the job is running, click on Data Files => My Data (Work) and look for the file called FSLeyes_dcvserver.txt for connection instructions.",
+  "longDescription": "FSLeyes (pronounced fossilise) is the FSL image viewer, released with FSL 5.0.10 onwards. NOTE: Once the job is running, click on Data Files => My Data (Work) and look for the file called FSLeyes_dcvserver.txt for connection instructions.",
   "modules": [
     "load tacc-singularity"
   ],
   "ontology": [],
   "parallelism": "SERIAL",
-  "tags": [],
+  "tags": ["DCV"],
   "templatePath": "runner.sh",
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
