@@ -32,7 +32,13 @@
       "id": "mask_file",
       "value": {
         "default": "MNI152_wb.nii",
-        "type": "string",
+        "type": "enumeration",
+        "enum_values": [
+            { "MNI152_wb.nii": "MNI152_wb.nii" },
+            { "MNI152_wb_dil.nii": "MNI152_wb_dil.nii" },
+            { "Tal_wb.nii": "Tal_wb.nii" },
+            { "Tal_wb_dil.nii": "Tal_wb_dil.nii" }
+        ],
         "visible": true,
         "required": true
       },
