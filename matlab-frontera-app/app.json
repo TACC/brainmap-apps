@@ -1,0 +1,167 @@
+{
+    "id": "matlab-frontera-9.9",
+    "name": "matlab-frontera",
+    "icon": null,
+    "uuid": "3498177610546811371-242ac116-0001-005",
+    "parallelism": "PARALLEL",
+    "defaultProcessorsPerNode": 112,
+    "defaultMemoryPerNode": 192,
+    "defaultNodeCount": 3,
+    "defaultMaxRunTime": "48:00:00",
+    "defaultQueue": "normal",
+    "version": "9.9",
+    "revision": 13,
+    "isPublic": false,
+    "helpURI": "http://www.mathworks.com/help/matlab/index.html",
+    "label": "MATLAB R2020b",
+    "owner": "wma_prtl",
+    "shortDescription": "Run an interactive MATLAB 2020b session on Frontera. Submit a help ticket to get your license configured or approved.",
+    "longDescription": "Run an interactive MATLAB 2020b session on Frontera. Submit a help ticket to get your license configured or approved.",
+    "tags": [
+        "DCV"
+    ],
+    "ontology": [],
+    "executionType": "HPC",
+    "executionSystem": "frontera.community.exec.frontera",
+    "deploymentPath": "applications/matlab-frontera",
+    "deploymentSystem": "frontera.storage.default",
+    "templatePath": "wrapper.sh",
+    "testPath": "test/test.sh",
+    "checkpointable": false,
+    "lastModified": "2021-05-19T18:07:59.000-05:00",
+    "modules": [
+        "matlab/2020b"
+    ],
+    "available": true,
+    "inputs": [
+        {
+            "id": "workingDirectory",
+            "value": {
+                "validator": "",
+                "visible": true,
+                "required": false,
+                "order": 0,
+                "enquote": false,
+                "default": ""
+            },
+            "details": {
+                "label": "Input File or Directory",
+                "description": "The file, or directory containing the files that you want to work on. This input will be copied to where your Matlab session runs. Click the 'Select Input' button to select the target file or directory.",
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xsd:string"
+                ],
+                "fileTypes": [
+                    "raw-0"
+                ]
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "id": "_license",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "string",
+                "order": 0,
+                "enquote": false,
+                "default": "",
+                "validator": ""
+            },
+            "details": {
+                "label": "Matlab License File Text",
+                "description": "The text that should be put in the Matlab license file.",
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ]
+            }
+        },
+        {
+            "id": "desktop_resolution",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "enumeration",
+                "order": 0,
+                "enquote": false,
+                "default": "1280x800",
+                "enum_values": [
+                    {
+                        "800x600": "800x600"
+                    },
+                    {
+                        "1280x800": "1280x800"
+                    },
+                    {
+                        "1920x1080": "1920x1080"
+                    },
+                    {
+                        "1920x1200": "1920x1200"
+                    },
+                    {
+                        "1600x1200": "1600x1200"
+                    },
+                    {
+                        "2560x1600": "2560x1600"
+                    }
+                ]
+            },
+            "details": {
+                "label": "Desktop Resolution",
+                "description": "Set the desktop screen size for your visualization session.",
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:enumeration",
+                    "xs:string"
+                ]
+            }
+        },
+        {
+            "id": "_webhook_base_url",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "string",
+                "order": 1,
+                "enquote": false,
+                "default": null,
+                "validator": null
+            },
+            "details": {
+                "label": "Base portal webhook url.",
+                "description": null,
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ]
+            }
+        }
+    ],
+    "outputs": []
+}
