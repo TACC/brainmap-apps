@@ -1,0 +1,75 @@
+{
+  "checkpointable": false,
+  "name": "{{ agave.username }}-{{ app.name }}",
+  "executionSystem": "{{ app.executionSystem }}",
+  "executionType": "HPC",
+  "deploymentPath": "apps/{{ agave.username }}-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "{{  app.deploymentSystem }}",
+  "helpURI": "https://cbptools.readthedocs.io/en/latest/",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "Regional connectivity-based parcellation (rCBP) is a procedure for revealing the differentiation within a ROI based on its long-range connectivity profiles. CBPtools [4] is an open source software that performs this procedure with a range of customisable options, and provides the output as NIfTI images along with commonly used cluster-validity metrics.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "12:00:00",
+  "inputs": [],
+  "parameters": [
+    {
+      "id": "config_yaml",
+      "value": {
+        "default": "/scratch/05369/urrutia/brainmap/cbptools/test_data/cbptools-example-data/config_r_presma-sma_rsfmri3.yaml",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Input configuration file for cbptools create",
+        "required": true
+      }
+    },
+    {
+      "id": "workdir",
+      "value": {
+        "default": "/scratch/05369/urrutia/brainmap/cbptools/app_test/r_presma-sma_rsfmr",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "output directory",
+        "description": "name of the output directory for cbptools"
+      }
+    },
+    {
+      "id": "cores",
+      "value": {
+        "default": 20,
+        "type": "number",
+        "visible": true,
+        "required": false
+      },
+      "details": {
+        "label": "cores",
+        "description": "Number of cores for Snakemake multi-threading"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}

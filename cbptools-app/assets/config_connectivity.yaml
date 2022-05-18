@@ -1,0 +1,32 @@
+modality: connectivity
+data:
+  participants:
+    file: /scratch/05369/urrutia/brainmap/cbptools/test_data/cbptools-example-data/data_set/participants.tsv
+    delimiter: "\t"
+    index_column: participant_id
+  connectivity: /path/to/{participant_id}/file.npz
+  seed_coordinates: /path/to/seed_coordinates.npy
+  masks:
+    seed: /path/to/file.nii
+    space: standard
+parameters:
+  clustering:
+    method: kmeans
+    n_clusters: []
+    cluster_options:
+      algorithm: auto
+      init: k-means++
+      max_iter: 10000
+      n_init: 256
+    grouping:
+      linkage: complete
+      method: mode
+    validity:
+      internal:
+      - silhouette_score
+      similarity: adjusted_rand_score
+  report:
+    figure_format: png
+    individual_plots: false
+    benchmark: false
+    compress_output: true
