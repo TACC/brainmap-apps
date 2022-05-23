@@ -5,7 +5,7 @@
     "executionType": "HPC",
     "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
     "deploymentSystem": "tacc.work.wallen",
-    "helpURI": "http://www.mathworks.com/help/matlab/index.html",
+    "helpURI": "https://github.com/TACC/brainmap-apps/blob/main/cbp-matlab-app/CBP-Manual.pdf",
     "label": "{{ app.label }}",
     "shortDescription": "{{ app.description }}",
     "longDescription": "Perform CBP in an interactive MATLAB 2021b session. Submit a help ticket to get your license configured or approved.",
