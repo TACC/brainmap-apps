@@ -1,0 +1,8 @@
+temp2/tal_data_1_ALE.nii.gz
+temp2/tal_data_2_ALE.nii.gz
+temp2/tal_data_3_ALE.nii.gz
+temp2/tal_data_4_ALE.nii.gz
+temp2/tal_data_1_ALE.nii.gz
+temp2/tal_data_2_ALE.nii.gz
+temp2/tal_data_3_ALE.nii.gz
+temp2/tal_data_4_ALE.nii.gz

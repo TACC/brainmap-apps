@@ -1,0 +1,14 @@
+
+Melodic Version 3.15
+
+melodic -i output/mod_4d.nii.gz -d 2 -m masks/Tal_wb_dil.nii.gz --vn --Oall --report 
+---------------------------------------------
+
+Melodic results will be in output/mod_4d.ica
+
+Mask provided : masks/Tal_wb_dil.nii.gz
+
+Reading data file output/mod_4d  ...  done
+  Estimating data smoothness ...  done 
+  Removing mean image ... done
+Excluding voxels with constant value ... done
