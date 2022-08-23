@@ -1,0 +1,36 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.stampede2.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
+  "helpURI": "https://brainmap.org/ale/",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "GingerALE performs meta-analyses via the activation likelihood estimation (ALE) method.  This app will create ALE images, P value and Z score images, thresholding through P value, cluster-wise FWE or voxel-wise FWE methods. NOTE: Once the job is running, click on Data Files => My Data (Work) and look for the file called GingerALE_dcvserver.txt for connection instructions.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": ["DCV"],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "02:00:00",
+  "inputs": [],
+  "parameters": [
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}

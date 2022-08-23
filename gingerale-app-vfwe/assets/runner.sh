@@ -2,7 +2,7 @@
 if [ -z "${CONTAINER_IMAGE}" ]
 then
     version=$(cat ./_util/VERSION)
-    CONTAINER_IMAGE="index.docker.io/wallen/gingerale:${version}"
+    CONTAINER_IMAGE="index.docker.io/wjallen/gingerale:${version}"
 fi
 . lib/container_exec.sh
 
@@ -36,20 +36,41 @@ else
 fi
 
 
-if [ -n "${p}" ];
+if [ -n "${fwe}" ];
 then
-	PARAMS="${PARAMS} -p=${p} "
-
+        PARAMS="${PARAMS} -fwe=${fwe} "
 else
-	PARAMS="${PARAMS} -p=0.01 "
+        PARAMS="${PARAMS} -few=0.05 "
 fi
+
+if [ -n "${perm}" ];
+then
+        PARAMS="${PARAMS} -perm=${perm} "
+else
+        PARAMS="${PARAMS} -perm=5000 "
+fi
+
 
 if [ -n "${minVol}" ];
 then
 	PARAMS="${PARAMS} -minVol=${minVol} "
 else
-	PARAMS="${PARAMS} -minVol=200 "
+	PARAMS="${PARAMS} -minVol=9 "
 fi
+
+
+# Add Mask File
+if [ -n "${mask_file}" ];
+then
+        PARAMS="${PARAMS} -mask ${mask_file} "
+
+else
+        PARAMS="${PARAMS} -mask Tal_wb_dil.nii.gz "
+fi
+# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz                                                                          
+
+# Add -nonAdd flag
+PARAMS="${PARAMS} -nonAdd "
 
 
 echo "================================================================"

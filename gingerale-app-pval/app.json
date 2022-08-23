@@ -3,12 +3,12 @@
   "name": "wallen-{{ app.name }}",
   "executionSystem": "tacc.stampede2.wallen",
   "executionType": "HPC",
-  "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "tacc.work.wallen",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
   "helpURI": "http://brainmap.org/ale/cli.html",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": "GingerALE performs meta-analyses via the activation likelihood estimation (ALE) method. It also includes the transforms for icbm2tal conversions.",
+  "longDescription": "GingerALE performs meta-analyses via the activation likelihood estimation (ALE) method. This app will create ALE images and will calculate significance metrics (P,Z) to apply a P value threshold and minimum cluster volume.",
   "modules": [
     "load tacc-singularity"
   ],
@@ -22,7 +22,8 @@
   "inputs": [    {
     "id": "foci_text",
     "details": {
-      "label": "the text file of foci data to use",
+      "label": "Foci Text",
+      "description": "The text file of foci data to use",
       "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
       "required": true
     },
@@ -38,7 +39,7 @@
         "required": false
       },
       "details": {
-        "label": "P value",
+        "label": "P Value (-p)",
         "description": "Uncorrected P value threshold"
       }
     },
@@ -51,14 +52,33 @@
         "required": false
       },
       "details": {
-        "label": "minimum volume",
+        "label": "Minimum Volume (-minVol)",
         "description": "Minimum allowed volume in mm^3"
+      }
+    },
+    {
+      "id": "mask_file",
+      "value": {
+        "default": "Tal_wb_dil.nii.gz",
+        "type": "enumeration",
+        "enum_values": [
+            { "MNI152_wb.nii.gz": "MNI152_wb.nii.gz" },
+            { "MNI152_wb_dil.nii.gz": "MNI152_wb_dil.nii.gz" },
+            { "Tal_wb.nii.gz": "Tal_wb.nii.gz" },
+            { "Tal_wb_dil.nii.gz": "Tal_wb_dil.nii.gz" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Mask Image",
+        "description": "The NIfTI image to use as a mask"
       }
     },
     {
       "id": "CONTAINER_IMAGE",
       "value": {
-        "default": "wallen/gingerale:3.0.2",
+        "default": "wjallen/gingerale:3.0.2",
         "type": "string",
         "visible": false,
         "required": true,
