@@ -8,7 +8,7 @@
   "helpURI": "http://brainmap.org/ale/cli.html",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": ".GingerALE performs meta-analyses via the activation likelihood estimation (ALE) method. This app will create ALE and P value images using the foci and cluster-forming P value threshold, and then run permutations to calculate the minimum cluster volume through cluster-wise FWE thresholding.",
+  "longDescription": "GingerALE performs meta-analyses via the activation likelihood estimation (ALE) method. This app will create ALE and P value images using the foci and cluster-forming P value threshold, and then run permutations to calculate the minimum cluster volume through cluster-wise FWE thresholding.",
   "modules": [
     "load tacc-singularity"
   ],
@@ -91,7 +91,7 @@
     {
       "id": "CONTAINER_IMAGE",
       "value": {
-        "default": "wjallen/gingerale:3.0.2",
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
         "type": "string",
         "visible": false,
         "required": true,

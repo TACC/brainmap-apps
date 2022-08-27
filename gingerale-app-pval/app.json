@@ -78,7 +78,7 @@
     {
       "id": "CONTAINER_IMAGE",
       "value": {
-        "default": "wjallen/gingerale:3.0.2",
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
         "type": "string",
         "visible": false,
         "required": true,
