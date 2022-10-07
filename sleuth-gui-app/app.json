@@ -1,10 +1,10 @@
 {
   "checkpointable": false,
   "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.stampede2.wallen",
+  "executionSystem": "tacc.lonestar6.wallen",
   "executionType": "HPC",
-  "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "tacc.work.wallen",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
   "helpURI": "https://brainmap.org/sleuth/",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",

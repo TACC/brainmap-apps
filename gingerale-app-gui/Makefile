@@ -11,6 +11,9 @@ run:
 inter:
 	docker run --rm -it wjallen/gingerale:3.0.2 /bin/bash
 
+push:
+	docker push wjallen/gingerale:3.0.2
+	
 
 list:
 	tapis apps search --id start wallen

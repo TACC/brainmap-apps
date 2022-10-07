@@ -7,6 +7,4 @@ RUN apt update -y && \
         libxtst6 \
         libxi6
 
-RUN mkdir -p /app/ && \
-    cd /app/ && \
-    wget http://brainmap.org/sleuth/Sleuth.jar
+ADD ./src/Sleuth.jar /app/
