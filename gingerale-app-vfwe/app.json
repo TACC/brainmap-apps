@@ -1,7 +1,7 @@
 {
   "checkpointable": false,
   "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.stampede2.wallen",
+  "executionSystem": "tacc.lonestar6.wallen",
   "executionType": "HPC",
   "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
   "deploymentSystem": "cloud.corral.work.wallen",
@@ -20,7 +20,7 @@
   "version": "{{ app.version }}",
   "defaultMaxRunTime": "02:00:00",
   "inputs": [    {
-    "id": "Foci Text",
+    "id": "foci_text",
     "details": {
       "label": "Foci Text",
       "description": "The text file of foci data to use",
