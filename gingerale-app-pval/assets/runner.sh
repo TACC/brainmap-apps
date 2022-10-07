@@ -6,6 +6,8 @@ then
 fi
 . lib/container_exec.sh
 
+# silence xalt errors
+module unload xalt
 
 
 #export LC_ALL=C
@@ -17,7 +19,7 @@ PARAMS=" "
 if [ 1 ];
 then
 
-	COMMAND="${COMMAND} org.brainmap.meta.getALE2 " 
+	COMMAND="${COMMAND} org.brainmap.meta.getALE2 "
 fi
 
 
@@ -54,12 +56,12 @@ fi
 # Add Mask File
 if [ -n "${mask_file}" ];
 then
-        PARAMS="${PARAMS} -mask ${mask_file} "
+        PARAMS="${PARAMS} -mask=masks/${mask_file} "
 
 else
-        PARAMS="${PARAMS} -mask Tal_wb_dil.nii.gz "
+        PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "
 fi
-# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz                                                                          
+# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 
 # Add -nonAdd flag
 PARAMS="${PARAMS} -nonAdd "
@@ -71,5 +73,3 @@ echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
 container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
-
-
