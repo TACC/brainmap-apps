@@ -154,4 +154,4 @@ sleep 1
 find /tmp/.X11-unix -user $USER -exec rm -f '{}' \;
 
 echo "TACC: job $SLURM_JOB_ID execution finished at: `date`"
-rm $STOCKYARD/GingerALE_dcvserver.txt
+rm $STOCKYARD/Sleuth_dcvserver.txt
