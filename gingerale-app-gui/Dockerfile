@@ -7,6 +7,5 @@ RUN apt update -y && \
         libxtst6 \
         libxi6
 
-RUN mkdir -p /app/ && \
-    cd /app/ && \
-    wget http://brainmap.org/ale/GingerALE.jar
+ADD ./src/GingerALE.jar /app/
+
