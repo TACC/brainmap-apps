@@ -6,10 +6,12 @@ then
 fi
 . lib/container_exec.sh
 
+# silence xalt errors
+module unload xalt
 
 
 #export LC_ALL=C
-COMMAND=" java -cp /app/GingerALE.jar "
+COMMAND=" java -Xmx2G -cp /app/GingerALE.jar "
 PARAMS=" "
 
 
@@ -45,10 +47,10 @@ PARAMS="${PARAMS} -noPVal "
 # Add Mask File
 if [ -n "${mask_file}" ];
 then
-	PARAMS="${PARAMS} -mask ${mask_file} "
+	PARAMS="${PARAMS} -mask=masks/${mask_file} "
 
 else
-	PARAMS="${PARAMS} -mask Tal_wb_dil.nii.gz "
+	PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "
 fi
 # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz                                                                          
 
