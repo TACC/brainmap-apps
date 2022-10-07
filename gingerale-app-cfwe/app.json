@@ -1,7 +1,7 @@
 {
   "checkpointable": false,
   "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.stampede2.wallen",
+  "executionSystem": "tacc.lonestar6.wallen",
   "executionType": "HPC",
   "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
   "deploymentSystem": "cloud.corral.work.wallen",
