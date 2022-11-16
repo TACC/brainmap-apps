@@ -1,0 +1,84 @@
+FROM centos:7
+
+# update, grab gcc and some other dependencies
+RUN yum -y update \
+    && yum -y groupinstall "Development Tools" \
+    && yum -y install which wget \
+    && yum -y install libpng12 libmng zlib-devel python-devel bzip2-devel
+
+# Download and install openblas
+RUN cd /tmp \
+    && wget https://github.com/xianyi/OpenBLAS/archive/v0.3.4.tar.gz \
+    && tar -xvzf v0.3.4.tar.gz \
+    && cd OpenBLAS-0.3.4 \
+    && make -j2 \
+    && make install 
+
+ENV LD_LIBRARY_PATH=/opt/OpenBLAS/lib:${LD_LIBRARY_PATH}
+
+# Download and install boost/1.51.0
+RUN cd /tmp \
+    && wget https://sourceforge.net/projects/boost/files/boost/1.51.0/boost_1_51_0.tar.gz/download \
+    && tar -xvzf download \
+    && cd boost_1_51_0 \
+    && ./bootstrap.sh --prefix=/usr/local \
+    && ./b2 install 
+
+# Download and install fsl
+RUN cd /tmp \
+    && curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
+    && python fslinstaller.py -d /usr/local/fsl 
+
+# Pick a version of CUDA to install
+ARG CUDA_VER=11.4.1
+ARG CUDA_RPM=cuda-repo-rhel7-11-4-local-11.4.1_470.57.02-1.x86_64.rpm
+
+RUN cd /tmp \
+    && wget https://developer.download.nvidia.com/compute/cuda/${CUDA_VER}/local_installers/${CUDA_RPM} \
+    && yum install -y epel-release \
+    && yum install -y dkms \
+    && rpm -i ${CUDA_RPM} \
+    && yum clean all \
+    && yum install -y cuda 
+
+# # Patch for bedpostx_gpu
+# NOTE: bedpostx_gpu binaries for cuda 11.3+ are only available in FSL 6.0.6
+# RUN cd /tmp \
+#     && wget http://users.fmrib.ox.ac.uk/~moisesf/Bedpostx_GPU/FSL_6/CUDA_10.1/bedpostx_gpu.zip \
+#     && unzip bedpostx_gpu.zip \
+#     && mv -f bin/* /usr/local/fsl/bin/ \
+#     && mv -f lib/* /usr/local/fsl/lib/  
+ 
+# Patch for eddy_gpu
+ENV PATH=/usr/local/cuda-11.4/bin:${PATH}
+RUN cd /tmp \
+    && git clone https://github.com/dolchan/eddy-gpu \
+    && cd eddy-gpu \
+    && make \
+    && mv -f eddy-gpu /usr/local/fsl/bin/
+
+# # Patch for probtrackx_gpu
+# NOTE: probtrackx_gpu binaries for cuda 11.x+ are only available in FSL 6.0.6
+# RUN cd /tmp \
+#     && wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/FSL_6/CUDA_10.1/probtrackx2_gpu.zip \
+#     && unzip probtrackx2_gpu.zip \
+#     && mv -f probtrackx2_gpu /usr/local/fsl/bin/ 
+ 
+RUN yum -y install libX11
+ 
+# Clean up the container a bit
+RUN yum -y clean all \
+    && rm -rf /tmp/* \
+    && rm -rf /var/cuda-repo-rhel7-11-4-local/*rpm
+
+
+ENV LD_LIBRARY_PATH=/usr/local/cuda-11.4/targets/x86_64-linux/lib:${LD_LIBRARY_PATH}
+
+ENV FSLDIR /usr/local/fsl
+ENV PATH=${FSLDIR}/bin:${PATH}
+ENV FSLMULTIFILEQUIT TRUE
+ENV FSLGECUDAQ cuda.q
+ENV FSLTCLSH /usr/local/fsl/bin/fsltclsh 
+ENV FSLWISH /usr/local/fsl/bin/fslwish
+ENV FSLOUTPUTTYPE=NIFTI_GZ
+
