@@ -132,7 +132,7 @@ TAP_LOCKFILE=${HOME}/.tap/${SLURM_JOB_ID}.lock
 sleep 1
 DISPLAY=:0 xterm -fg white -bg red3 +sb -geometry 55x2+0+0 -T 'END SESSION HERE' -e "echo 'TACC: Press <enter> in this window to end your session' && read && rm ${TAP_LOCKFILE}" &
 sleep 1
-DISPLAY=:0 xterm -ls -geometry 80x24+100+50 -e 'singularity exec docker://${CONTAINER_IMAGE} java -jar /app/GingerALE.jar' &
+DISPLAY=:0 xterm -ls -geometry 80x24+100+50 -e 'singularity exec docker://${CONTAINER_IMAGE} java -Xmx16G -Xms16G -jar /app/GingerALE.jar' &
 
 
 echo $(date) > ${TAP_LOCKFILE}

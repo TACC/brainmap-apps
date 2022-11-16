@@ -11,7 +11,7 @@ module unload xalt
 
 
 #export LC_ALL=C
-COMMAND=" java -Xmx2G -cp /app/GingerALE.jar "
+COMMAND=" java -Xms16G -Xmx16G -cp /app/GingerALE.jar "
 PARAMS=" "
 
 
@@ -52,7 +52,7 @@ then
 else
 	PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "
 fi
-# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz                                                                          
+# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 
 
 
@@ -60,6 +60,6 @@ echo "================================================================"
 echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
-container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+time container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
 
 

@@ -12,7 +12,7 @@ module unload xalt
 
 
 #export LC_ALL=C
-COMMAND=" java -Xmx2G -cp /app/GingerALE.jar "
+COMMAND=" java -Xmx16G -Xms16G -cp /app/GingerALE.jar "
 PARAMS=" "
 
 
@@ -80,4 +80,4 @@ echo "================================================================"
 echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
-container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+time container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}

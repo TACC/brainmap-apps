@@ -1,10 +1,7 @@
-FROM openjdk:8-jdk
+FROM openjdk:18.0.2.1-jdk
 
-RUN apt update -y && \
-    apt upgrade -y && \
-    apt-get install -y \
-        libxrender1 \
-        libxtst6 \
-        libxi6
+RUN microdnf upgrade && \
+    microdnf install libXext libXrender libXtst
 
 ADD ./src/GingerALE.jar /app/
+
