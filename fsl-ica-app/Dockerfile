@@ -1,32 +1,39 @@
 FROM centos:7
 
-# update, grab a recent gcc and openblas
+# update, grab gcc and some other dependencies
 RUN yum -y update \
     && yum -y groupinstall "Development Tools" \
     && yum -y install which wget \
-    && yum -y install libpng12 libmng
+    && yum -y install libpng12 libmng zlib-devel python-devel bzip2-devel
 
 # Download and install openblas
-RUN curl -LO https://github.com/xianyi/OpenBLAS/archive/v0.3.4.tar.gz \
+RUN cd /tmp \
+    && wget https://github.com/xianyi/OpenBLAS/archive/v0.3.4.tar.gz \
     && tar -xvzf v0.3.4.tar.gz \
     && cd OpenBLAS-0.3.4 \
     && make -j2 \
-    && make install \
-    && cd ../ \
-    && rm -rf OpenBLAS-0.3.4/ v0.3.4.tar.gz
+    && make install
 
 ENV LD_LIBRARY_PATH=/opt/OpenBLAS/lib:${LD_LIBRARY_PATH}
 
+# Download and install boost/1.51.0
+RUN cd /tmp \
+    && wget https://sourceforge.net/projects/boost/files/boost/1.51.0/boost_1_51_0.tar.gz/download \
+    && tar -xvzf download \
+    && cd boost_1_51_0 \
+    && ./bootstrap.sh --prefix=/usr/local \
+    && ./b2 install
+
 # Download and install fsl
-RUN curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
+RUN cd /tmp \
+    && curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
     && python fslinstaller.py -d /usr/local/fsl
+
+RUN yum -y install libX11 libXxf86vm mesa-libGL
 
 # Clean up the container a bit
 RUN yum -y clean all \
-    && rm /anaconda-post.log \
-    && rm /fslinstaller.py \
-    && rm -rf /tmp/* \
-    && rm -rf /var/cache/yum
+    && rm -rf /tmp/*
 
 
 ENV FSLDIR /usr/local/fsl

@@ -1,10 +1,10 @@
 {
   "checkpointable": false,
   "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.stampede2.wallen",
+  "executionSystem": "tacc.lonestar6.wallen",
   "executionType": "HPC",
-  "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "tacc.work.wallen",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
   "helpURI": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/MELODIC",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
@@ -22,7 +22,7 @@
   "inputs": [    {
     "id": "4dimage",
     "details": {
-      "label": "Input time series image file",
+      "label": "Input Time Series Image File",
       "required": true
     },
     "semantics": {}
@@ -43,8 +43,8 @@
         "required": true
       },
       "details": {
-        "label": "mask file",
-        "description": "File name of mask for thresholding. Options are: MNI152_wb.nii, MNI152_wb_dil.nii, Tal_wb.nii, Tal_wb_dil.nii"
+        "label": "Mask Image",
+        "description": "The NIfTI image to use as a mask"
       }
     },
     {
@@ -56,8 +56,8 @@
         "required": false
       },
       "details": {
-        "label": "dimensionality reduction",
-        "description": "dimensionality reduction into #num dimensions"
+        "label": "Dimensionality Reduction",
+        "description": "Dimensionality reduction into #num dimensions"
       }
     },
     {
