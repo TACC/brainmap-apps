@@ -126,6 +126,10 @@ fi
 # silence xalt errors
 module unload xalt
 
+# plugins
+mkdir -p $HOME/Mango/Plugins
+singularity exec docker://${CONTAINER_IMAGE} cp /Plugins/BehavioralAnalysis.jar /Plugins/DiseaseAnalysis.jar /Plugins/ParadigmAnalysis.jar $HOME/Mango/Plugins/
+
 # run an xterm for the user; execution will hold here
 mkdir -p $HOME/.tap
 TAP_LOCKFILE=${HOME}/.tap/${SLURM_JOB_ID}.lock
