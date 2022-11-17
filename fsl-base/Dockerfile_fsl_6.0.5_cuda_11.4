@@ -12,7 +12,7 @@ RUN cd /tmp \
     && tar -xvzf v0.3.4.tar.gz \
     && cd OpenBLAS-0.3.4 \
     && make -j2 \
-    && make install 
+    && make install
 
 ENV LD_LIBRARY_PATH=/opt/OpenBLAS/lib:${LD_LIBRARY_PATH}
 
@@ -22,12 +22,12 @@ RUN cd /tmp \
     && tar -xvzf download \
     && cd boost_1_51_0 \
     && ./bootstrap.sh --prefix=/usr/local \
-    && ./b2 install 
+    && ./b2 install
 
 # Download and install fsl
 RUN cd /tmp \
     && curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
-    && python fslinstaller.py -d /usr/local/fsl 
+    && python fslinstaller.py -d /usr/local/fsl
 
 # Pick a version of CUDA to install
 ARG CUDA_VER=11.4.1
@@ -39,7 +39,7 @@ RUN cd /tmp \
     && yum install -y dkms \
     && rpm -i ${CUDA_RPM} \
     && yum clean all \
-    && yum install -y cuda 
+    && yum install -y cuda
 
 # # Patch for bedpostx_gpu
 # NOTE: bedpostx_gpu binaries for cuda 11.3+ are only available in FSL 6.0.6
@@ -47,8 +47,8 @@ RUN cd /tmp \
 #     && wget http://users.fmrib.ox.ac.uk/~moisesf/Bedpostx_GPU/FSL_6/CUDA_10.1/bedpostx_gpu.zip \
 #     && unzip bedpostx_gpu.zip \
 #     && mv -f bin/* /usr/local/fsl/bin/ \
-#     && mv -f lib/* /usr/local/fsl/lib/  
- 
+#     && mv -f lib/* /usr/local/fsl/lib/
+
 # Patch for eddy_gpu
 ENV PATH=/usr/local/cuda-11.4/bin:${PATH}
 RUN cd /tmp \
@@ -62,10 +62,10 @@ RUN cd /tmp \
 # RUN cd /tmp \
 #     && wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/FSL_6/CUDA_10.1/probtrackx2_gpu.zip \
 #     && unzip probtrackx2_gpu.zip \
-#     && mv -f probtrackx2_gpu /usr/local/fsl/bin/ 
- 
-RUN yum -y install libX11
- 
+#     && mv -f probtrackx2_gpu /usr/local/fsl/bin/
+
+RUN yum -y install libX11 libXxf86vm mesa-libGL
+
 # Clean up the container a bit
 RUN yum -y clean all \
     && rm -rf /tmp/* \
@@ -78,7 +78,6 @@ ENV FSLDIR /usr/local/fsl
 ENV PATH=${FSLDIR}/bin:${PATH}
 ENV FSLMULTIFILEQUIT TRUE
 ENV FSLGECUDAQ cuda.q
-ENV FSLTCLSH /usr/local/fsl/bin/fsltclsh 
+ENV FSLTCLSH /usr/local/fsl/bin/fsltclsh
 ENV FSLWISH /usr/local/fsl/bin/fslwish
 ENV FSLOUTPUTTYPE=NIFTI_GZ
-
