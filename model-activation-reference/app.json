@@ -1,0 +1,80 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.lonestar6.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
+  "helpURI": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/MELODIC",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "Generates model activation images for large scale BrainMap data sets.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "12:00:00",
+  "inputs": [    {
+    "id": "input_tsv",
+    "details": {
+      "label": "Input tsv File",
+      "description": "Database export of BrainMap IDs and coordinates",
+      "required": true
+    },
+    "semantics": {}
+  }],
+  "parameters": [
+    {
+      "id": "format",
+      "value": {
+        "default": "-tal",
+        "type": "enumeration",
+        "enum_values": [
+            { "-tal": "-tal" },
+            { "-mni": "-mni" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Format",
+        "description": "The format of the input tsv file"
+      }
+    },
+    {
+      "id": "mask_file",
+      "value": {
+        "default": "Tal_wb_dil.nii.gz",
+        "type": "enumeration",
+        "enum_values": [
+            { "MNI152_wb.nii.gz": "MNI152_wb.nii.gz" },
+            { "MNI152_wb_dil.nii.gz": "MNI152_wb_dil.nii.gz" },
+            { "Tal_wb.nii.gz": "Tal_wb.nii.gz" },
+            { "Tal_wb_dil.nii.gz": "Tal_wb_dil.nii.gz" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Mask Image",
+        "description": "The NIfTI image to use as a mask"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
