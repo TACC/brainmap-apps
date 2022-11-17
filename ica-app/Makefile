@@ -1,3 +1,15 @@
+APPID ?= wallen-ica-1.0.0
+
+list:
+	tapis apps search --id start wallen
+
+deploy:
+	tapis apps deploy -W . -F app.json --ini project.ini
+
+update:
+	tapis apps update -F app.json --ini project.ini ${APPID}
+
+
 build:
 	docker build -t wjallen/ica:1.0.0 .
 
@@ -6,6 +18,3 @@ run:
 
 push:
 	docker push wjallen/ica:1.0.0
-
-deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini
