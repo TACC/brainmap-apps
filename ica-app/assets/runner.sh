@@ -44,12 +44,15 @@ echo "Getting activation maps with GingerALE..."
 REF="-${format}"   # can be -tal or -mni
 MASK="masks/${mask_file}"   # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 
+N=40
+
 for FILE in input/*
 do
-	singularity --quiet exec ${SING_IMG} java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap \
-        	                             -expanded -gzip $REF -mask=$MASK $FILE
-        NEW_FILE=$( basename $FILE .txt )
-        mv input/${NEW_FILE}_ALE.nii.gz temp1/
+  ((i=i%$N)); ((i++==0)) && wait
+  singularity --quiet exec ${SING_IMG} java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap \
+        	                             -expanded -gzip $REF -mask=$MASK $FILE \
+  && NEW_FILE=$( basename $FILE .txt ) \
+  && mv input/${NEW_FILE}_ALE.nii.gz temp1/ &
 done
 
 find temp1/
@@ -64,15 +67,22 @@ MAX_VAL=0
 
 for FILE in temp1/*.nii.gz
 do
-	THIS_VAL=` singularity --quiet exec ${SING_IMG} fslstats ${FILE} -P 100 `
-	echo "THIS_VAL = ${THIS_VAL}"
-	if (( $(echo "$THIS_VAL > $MAX_VAL" | bc -l) )); then
-		MAX_VAL=$THIS_VAL
-	fi
+  ((i=i%$N)); ((i++==0)) && wait
+  THIS_VAL=` singularity --quiet exec ${SING_IMG} fslstats ${FILE} -P 100 ` \
+  && echo "THIS_VAL = ${THIS_VAL}" \
+  && echo ${THIS_VAL} >> list_of_vals &
+done
+
+for VALUE in ` cat list_of_vals `
+do
+  if (( $(echo "$VALUE > $MAX_VAL" | bc -l) )); then
+    MAX_VAL=$VALUE
+  fi
 done
 
 SCALING=` echo "0 k $SCALED_MAX $MAX_VAL / p" | dc - `
 echo "SCALING = $SCALING"
+rm list_of_vals
 
 for FILE in temp1/*.nii.gz
 do
