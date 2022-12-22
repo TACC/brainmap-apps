@@ -1,6 +1,7 @@
 FROM wjallen/fsl:6.0.5
 
-RUN yum install -y java-1.8.0-openjdk.x86_64 tree vim
+RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm \
+    && rpm -Uvh jdk-17_linux-x64_bin.rpm
 
 #RUN wget https://nifti.nimh.nih.gov/pub/dist/src/fsliolib/imglob && \
 #    chmod +x imglob && \

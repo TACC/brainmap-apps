@@ -1,4 +1,4 @@
-FROM openjdk:18.0.2.1-jdk
+FROM openjdk:17.0.2-jdk
 
 RUN microdnf upgrade && \
     microdnf install libXext libXrender libXtst
