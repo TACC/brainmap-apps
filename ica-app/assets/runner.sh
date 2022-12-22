@@ -41,8 +41,8 @@ echo ""
 # Step 1: Get Activation Maps
 date
 echo "Getting activation maps with GingerALE..."
-REF="-${format}"   # can be -tal or -mni
-MASK="masks/${mask_file}"   # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
+REF="-${coord_space}"   # can be -tal or -mni
+MASK="masks/${coord_space}${mask_size}"   # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 
 N=40
 

@@ -36,7 +36,7 @@
         "default": "0.01",
         "type": "string",
         "visible": true,
-        "required": false
+        "required": true
       },
       "details": {
         "label": "P Value (-p)",
@@ -49,7 +49,7 @@
         "default": "0.05",
         "type": "string",
         "visible": true,
-        "required": false
+        "required": true
       },
       "details": {
         "label": "Family-wise Error (-fwe)",
@@ -62,7 +62,7 @@
         "default": "5000",
         "type": "string",
         "visible": true,
-        "required": false
+        "required": true
       },
       "details": {
         "label": "Permutations (-perm)",
@@ -70,22 +70,37 @@
       }
     },
     {
-      "id": "mask_file",
+      "id": "coord_space",
       "value": {
-        "default": "Tal_wb_dil.nii.gz",
+        "default": "Tal_wb",
         "type": "enumeration",
         "enum_values": [
-            { "MNI152_wb.nii.gz": "MNI152_wb.nii.gz" },
-            { "MNI152_wb_dil.nii.gz": "MNI152_wb_dil.nii.gz" },
-            { "Tal_wb.nii.gz": "Tal_wb.nii.gz" },
-            { "Tal_wb_dil.nii.gz": "Tal_wb_dil.nii.gz" }
+            { "Tal_wb": "Talairach" },
+            { "MNI152_wb": "MNI" }
         ],
         "visible": true,
         "required": true
       },
       "details": {
-        "label": "Mask Image",
-        "description": "The NIfTI image to use as a mask"
+        "label": "Coordinate Space",
+        "description": "Specify the format of the input foci data"
+      }
+    },
+    {
+      "id": "mask_size",
+      "value": {
+        "default": ".nii.gz",
+        "type": "enumeration",
+        "enum_values": [
+            { ".nii.gz": "More Conservative (Smaller)" },
+            { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Mask Size",
+        "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks"
       }
     },
     {

@@ -54,9 +54,11 @@ else
 fi
 
 # Add Mask File
-if [ -n "${mask_file}" ];
+MASK_FILE="${coord_space}${mask_size}"
+
+if [ -n "${MASK_FILE}" ];
 then
-        PARAMS="${PARAMS} -mask=masks/${mask_file} "
+        PARAMS="${PARAMS} -mask=masks/${MASK_FILE} "
 
 else
         PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "

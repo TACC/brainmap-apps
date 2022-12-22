@@ -14,10 +14,10 @@ COMMAND="melodic"
 INPUTS=" -i ${4dimage} "
 OPTS=""
 
-
-if [ -n "${mask_file}" ];
+MASK_FILE="${coord_space}${mask_size}"
+if [ -n "${MASK_FILE}" ];
 then
-  OPTS="${OPTS} -m masks/${mask_file} "
+  OPTS="${OPTS} -m masks/${MASK_FILE} "
 else
   echo "must specify mask file"
   exit 1

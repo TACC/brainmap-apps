@@ -10,7 +10,6 @@ update:
 	tapis apps update -F app.json --ini project.ini ${APPID}
 
 
-
 build:
 	docker build -t wjallen/gingerale:3.0.2 .
 
