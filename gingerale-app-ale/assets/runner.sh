@@ -19,7 +19,7 @@ PARAMS=" "
 if [ 1 ];
 then
 
-	COMMAND="${COMMAND} org.brainmap.meta.getALE2 " 
+	COMMAND="${COMMAND} org.brainmap.meta.getALE2 "
 fi
 
 
@@ -45,9 +45,11 @@ PARAMS="${PARAMS} -nonAdd "
 PARAMS="${PARAMS} -noPVal "
 
 # Add Mask File
-if [ -n "${mask_file}" ];
+MASK_FILE="${coord_space}${mask_size}"
+
+if [ -n "${MASK_FILE}" ];
 then
-	PARAMS="${PARAMS} -mask=masks/${mask_file} "
+	PARAMS="${PARAMS} -mask=masks/${MASK_FILE} "
 
 else
 	PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "
@@ -56,10 +58,9 @@ fi
 
 
 
+
 echo "================================================================"
 echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
 time container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
-
-
