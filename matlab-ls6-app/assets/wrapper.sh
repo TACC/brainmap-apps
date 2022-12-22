@@ -1,23 +1,52 @@
-
 set -x
 
 echo "TACC: job $SLURM_JOB_ID execution at: `date`"
 
+########################################################
+##########     INTERACTIVE WRAPPER CONFIG     ##########
+########################################################
+
+# program and command line arguments run within xterm -e command
+XTERM_CMD="${_XTERM_CMD}"
+
+# Webhook callback url for job ready notification.
+# Notifications are sent to INTERACTIVE_WEBHOOK_URL i.e. https://3dem.org/webhooks/interactive/
+INTERACTIVE_WEBHOOK_URL="${_webhook_base_url}interactive/"
+
+# set up license file
+if [ ! -f $HOME/.tacc_matlab_license ]; then
+cat << EOT >> $HOME/.tacc_matlab_license
+${_license}
+EOT
+fi
+
+cat $HOME/.tacc_matlab_license
+export LM_LICENSE_FILE=$HOME/.tacc_matlab_license
+echo "LM_LICENSE_FILE is : $LM_LICENSE_FILE"
+
+########################################################
+########################################################
+########################################################
+
 # our node name
 NODE_HOSTNAME=`hostname -s`
-echo "TACC: running on node $NODE_HOSTNAME"
+
+# HPC system target. Used as DCV host
+HPC_HOST=`hostname -d`
+
+echo "TACC: running on node $NODE_HOSTNAME on $HPC_HOST"
 
 TAP_FUNCTIONS="/share/doc/slurm/tap_functions"
 if [ -f ${TAP_FUNCTIONS} ]; then
-    . ${TAP_FUNCTIONS}
+  . ${TAP_FUNCTIONS}
 else
-    echo "TACC:"
-    echo "TACC: ERROR - could not find TAP functions file: ${TAP_FUNCTIONS}"
-    echo "TACC: ERROR - Please submit a consulting ticket at the TACC user portal"
-    echo "TACC: ERROR - https://portal.tacc.utexas.edu/tacc-consulting/-/consult/tickets/create"
-    echo "TACC:"
-    echo "TACC: job $SLURM_JOB_ID execution finished at: $(date)"
-    exit 1
+  echo "TACC:"
+  echo "TACC: ERROR - could not find TAP functions file: ${TAP_FUNCTIONS}"
+  echo "TACC: ERROR - Please submit a consulting ticket at the TACC user portal"
+  echo "TACC: ERROR - https://portal.tacc.utexas.edu/tacc-consulting/-/consult/tickets/create"
+  echo "TACC:"
+  echo "TACC: job $SLURM_JOB_ID execution finished at: $(date)"
+  exit 1
 fi
 
 # confirm DCV server is alive
@@ -81,7 +110,9 @@ if ! `dcv list-sessions | grep -q ${AGAVE_JOB_ID}`; then
   VNCSERVER_BIN=`which vncserver`
   echo "TACC: using default VNC server $VNCSERVER_BIN"
 
-  echo ${AGAVE_JOB_ID} | vncpasswd -f > vncp.txt
+  AGAVE_PASS=`which vncpasswd`
+  echo -n ${AGAVE_JOB_ID} > agave_id
+  ${AGAVE_PASS} -f < agave_id > vncp.txt
 
   # launch VNC session
   VNC_DISPLAY=`$VNCSERVER_BIN -geometry ${desktop_resolution} -rfbauth vncp.txt $@ 2>&1 | grep desktop | awk -F: '{print $3}'`
@@ -102,7 +133,8 @@ if [ "x${SERVER_TYPE}" == "xDCV" ]; then
   LOCAL_PORT=8443  # default DCV port
   DISPLAY=":0"
 elif [ "x${SERVER_TYPE}" == "xVNC" ]; then
-  LOCAL_PORT=`expr 5900 + $VNC_DISPLAY`
+  VNC_PORT=`expr 5900 + $VNC_DISPLAY`
+  LOCAL_PORT=5902
   DISPLAY=":${VNC_DISPLAY}"
 else
   echo "TACC: "
@@ -118,41 +150,36 @@ echo "TACC: local (compute node) ${SERVER_TYPE} port is $LOCAL_PORT"
 LOGIN_PORT=$(tap_get_port)
 echo "TACC: got login node ${SERVER_TYPE} port $LOGIN_PORT"
 
-# Webhook callback url for job ready notification
-# (notifications sent to INTERACTIVE_WEBHOOK_URL (i.e. https://3dem.org/webhooks/interactive/))`
-INTERACTIVE_WEBHOOK_URL="${_webhook_base_url}interactive/"
-
 # Wait a few seconds for good measure for the job status to update
 sleep 3;
+
+# create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just connect to $HPC_HOST
+for i in `seq 4`; do
+    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:$LOCAL_PORT login$i
+done
+echo "TACC: Created reverse ports on $HPC_HOST logins"
+echo "TACC:          https://$HPC_HOST:$LOGIN_PORT"
+
 if [ "x${SERVER_TYPE}" == "xDCV" ]; then
-  # create reverse tunnel port to login nodes.  Make one tunnel for each login so the user can just
-  # connect to frontera.tacc
-  for i in `seq 4`; do
-      ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:$LOCAL_PORT login$i
-  done
-  echo "TACC: Created reverse ports on Frontera logins"
-  echo "TACC:          https://frontera.tacc.utexas.edu:$LOGIN_PORT"
-  curl -k --data "event_type=WEB&address=https://frontera.tacc.utexas.edu:$LOGIN_PORT&owner=${AGAVE_JOB_OWNER}&job_uuid=${AGAVE_JOB_ID}" $INTERACTIVE_WEBHOOK_URL &
+  curl -k --data "event_type=WEB&address=https://$HPC_HOST:$LOGIN_PORT&owner=${AGAVE_JOB_OWNER}&job_uuid=${AGAVE_JOB_ID}" $INTERACTIVE_WEBHOOK_URL &
 elif [ "x${SERVER_TYPE}" == "xVNC" ]; then
 
   TAP_CERTFILE=${HOME}/.tap/.${SLURM_JOB_ID}
   # bail if we cannot create a secure session
   if [ ! -f ${TAP_CERTFILE} ]; then
-      echo "TACC: ERROR - could not find TLS cert for secure session"
-      echo "TACC: job ${SLURM_JOB_ID} execution finished at: $(date)"
-      exit 1
+    echo "TACC: ERROR - could not find TLS cert for secure session"
+    echo "TACC: job ${SLURM_JOB_ID} execution finished at: $(date)"
+    exit 1
   fi
 
   # fire up websockify to turn the vnc session connection into a websocket connection
   WEBSOCKIFY_CMD="/home1/00832/envision/websockify/run"
   WEBSOCKIFY_PORT=5902
-  WEBSOCKIFY_ARGS="--cert=$(cat ${TAP_CERTFILE}) --ssl-only -D ${WEBSOCKIFY_PORT} localhost:${LOCAL_PORT}"
+  WEBSOCKIFY_ARGS="--cert=$(cat ${TAP_CERTFILE}) --ssl-only --ssl-version=tlsv1_2 -D ${WEBSOCKIFY_PORT} localhost:${VNC_PORT}"
   ${WEBSOCKIFY_CMD} ${WEBSOCKIFY_ARGS} # websockify will daemonize
 
-  WEBSOCKET_PORT=$($LOGIN_PORT)
-
   # notifications sent to INTERACTIVE_WEBHOOK_URL
-  curl -k --data "event_type=VNC&host=stampede2.tacc.utexas.edu&port=$WEBSOCKET_PORT&address=stampede2.tacc.utexas.edu:$LOGIN_PORT&password=${AGAVE_JOB_ID}&owner=${AGAVE_JOB_OWNER}" $INTERACTIVE_WEBHOOK_URL &
+  curl -k --data "event_type=VNC&host=$HPC_HOST&port=$LOGIN_PORT&password=${AGAVE_JOB_ID}&owner=${AGAVE_JOB_OWNER}" $INTERACTIVE_WEBHOOK_URL &
 else
   # we should never get this message since we just checked this at LOCAL_PORT
   echo "TACC: "
@@ -164,62 +191,15 @@ else
   exit 1
 fi
 
-# Warn the user when their session is about to close
-# see if the user set their own runtime
-#TACC_RUNTIME=`qstat -j $JOB_ID | grep h_rt | perl -ne 'print $1 if /h_rt=(\d+)/'`  # qstat returns seconds
-#TACC_RUNTIME=`squeue -l -j $SLURM_JOB_ID | grep $SLURM_QUEUE | awk '{print $7}'` # squeue returns HH:MM:SS
-TACC_RUNTIME=`squeue -j $SLURM_JOB_ID -h --format '%l'`
-if [ x"$TACC_RUNTIME" == "x" ]; then
-	TACC_Q_RUNTIME=`sinfo -p $SLURM_QUEUE | grep -m 1 $SLURM_QUEUE | awk '{print $3}'`
-	if [ x"$TACC_Q_RUNTIME" != "x" ]; then
-		# pnav: this assumes format hh:dd:ss, will convert to seconds below
-		#       if days are specified, this won't work
-		TACC_RUNTIME=$TACC_Q_RUNTIME
-	fi
+if [ -d "$workingDirectory" ]; then
+  cd ${workingDirectory}
 fi
 
-#if [ x"$TACC_RUNTIME" != "x" ]; then
-  # there's a runtime limit, so warn the user when the session will die
-  # give 5 minute warning for runtimes > 5 minutes
-#        H=`echo $TACC_RUNTIME | awk -F: '{print $1}'`
-#        M=`echo $TACC_RUNTIME | awk -F: '{print $2}'`
-#        S=`echo $TACC_RUNTIME | awk -F: '{print $3}'`
-#        if [ "x$S" != "x" ]; then
-            # full HH:MM:SS present
-#            H=$(($H * 3600))
-#            M=$(($M * 60))
-#            TACC_RUNTIME_SEC=$(($H + $M + $S))
-#        elif [ "x$M" != "x" ]; then
-            # only HH:MM present, treat as MM:SS
-#            H=$(($H * 60))
-#            TACC_RUNTIME_SEC=$(($H + $M))
-#        else
-#            TACC_RUNTIME_SEC=$S
-#        fi
+module load matlab/${_MATLAB_VERSION}
 
-#  if [ $TACC_RUNTIME_SEC -gt 300 ]; then
-#    TACC_RUNTIME_SEC=`expr $TACC_RUNTIME_SEC - 300`
-#    sleep $TACC_RUNTIME_SEC && echo "TACC: $USER's $SERVER_TYPE session will end in 5 minutes.  Please save your work now." | wall &
-#  fi
-#fi
-
-# Load the default TACC modules
-module purge
-module load TACC
-module load matlab/2020b
-
-# set up license file
-cat << EOT >> .matlab_license
-${_license}
-EOT
-
-cat .matlab_license
-export LM_LICENSE_FILE=`pwd`/.matlab_license
-echo "LM_LICENSE_FILE is : $LM_LICENSE_FILE"
-
-# run an xterm for the user; execution will hold here
+# run an xterm and launch $XTERM_CMD for the user; execution will hold here
 export DISPLAY
-xterm -r -ls -geometry 80x24+10+10 -title '*** Exit this window to kill your $SERVER_TYPE server ***' -e 'matlab'
+xterm -r -ls -geometry 80x24+10+10 -title '*** Exit this window to kill your interactive session ***' -e "$XTERM_CMD"
 
 # job is done!
 
@@ -238,7 +218,6 @@ else
   echo "TACC: job $SLURM_JOB_ID execution finished at: `date`"
   exit 1
 fi
-
 
 # wait a brief moment so vncserver can clean up after itself
 sleep 1

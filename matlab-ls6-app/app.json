@@ -1,38 +1,33 @@
 {
-    "id": "matlab-frontera-9.9",
-    "name": "matlab-frontera",
+    "name": "matlab-ls6",
     "icon": null,
-    "uuid": "3498177610546811371-242ac116-0001-005",
     "parallelism": "PARALLEL",
-    "defaultProcessorsPerNode": 112,
+    "defaultProcessorsPerNode": 32,
     "defaultMemoryPerNode": 192,
-    "defaultNodeCount": 3,
+    "defaultNodeCount": 1,
     "defaultMaxRunTime": "48:00:00",
     "defaultQueue": "normal",
-    "version": "9.9",
-    "revision": 13,
+    "version": "9.13",
     "isPublic": false,
     "helpURI": "http://www.mathworks.com/help/matlab/index.html",
-    "label": "MATLAB R2020b",
-    "owner": "wma_prtl",
-    "shortDescription": "Run an interactive MATLAB 2020b session on Frontera. Submit a help ticket to get your license configured or approved.",
-    "longDescription": "Run an interactive MATLAB 2020b session on Frontera. Submit a help ticket to get your license configured or approved.",
+    "label": "MATLAB R2022b (Lonestar6)",
+    "shortDescription": "Run an interactive MATLAB 2022b session on Lonestar6. Submit a help ticket to get your license configured or approved.",
+    "longDescription": "Run an interactive MATLAB 2022b session on Lonestar6. Submit a help ticket to get your license configured or approved.",
     "tags": [
+        "VNC",
         "DCV"
     ],
     "ontology": [],
     "executionType": "HPC",
-    "executionSystem": "frontera.community.exec.frontera",
-    "deploymentPath": "applications/matlab-frontera",
-    "deploymentSystem": "frontera.storage.default",
-    "templatePath": "wrapper.sh",
+    "executionSystem": "cep.community.exec.ls6",
+    "deploymentPath": "interactive-template",
+    "deploymentSystem": "cep.storage.applications",
+    "templatePath": "interactive-matlab.sh",
     "testPath": "test/test.sh",
     "checkpointable": false,
-    "lastModified": "2021-05-19T18:07:59.000-05:00",
     "modules": [
-        "matlab/2020b"
+        "load swr/21.2.5"
     ],
-    "available": true,
     "inputs": [
         {
             "id": "workingDirectory",
@@ -64,32 +59,6 @@
         }
     ],
     "parameters": [
-        {
-            "id": "_license",
-            "value": {
-                "visible": true,
-                "required": true,
-                "type": "string",
-                "order": 0,
-                "enquote": false,
-                "default": "",
-                "validator": ""
-            },
-            "details": {
-                "label": "Matlab License File Text",
-                "description": "The text that should be put in the Matlab license file.",
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xs:string"
-                ]
-            }
-        },
         {
             "id": "desktop_resolution",
             "value": {
@@ -138,17 +107,69 @@
         },
         {
             "id": "_webhook_base_url",
+            "semantics": {
+                "minCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ],
+                "maxCardinality": 1
+            },
+            "value": {
+                "required": true,
+                "enquote": false,
+                "default": null,
+                "visible": true,
+                "validator": null,
+                "type": "string",
+                "order": 1
+            },
+            "details": {
+                "argument": null,
+                "repeatArgument": false,
+                "description": null,
+                "showArgument": false,
+                "label": "Base portal webhook url."
+            }
+        },
+        {
+            "id": "_XTERM_CMD",
             "value": {
                 "visible": true,
                 "required": true,
                 "type": "string",
-                "order": 1,
+                "order": 2,
                 "enquote": false,
-                "default": null,
+                "default": "swr -t 8 matlab",
                 "validator": null
             },
             "details": {
-                "label": "Base portal webhook url.",
+                "label": "XTERM Program CMD",
+                "description": null,
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ]
+            }
+        },
+        {
+            "id": "_MATLAB_VERSION",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "string",
+                "order": 3,
+                "enquote": false,
+                "default": "2022b",
+                "validator": null
+            },
+            "details": {
+                "label": "Version of matlab to load",
                 "description": null,
                 "argument": null,
                 "showArgument": false,
