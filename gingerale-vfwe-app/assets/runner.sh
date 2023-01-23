@@ -75,14 +75,13 @@ PARAMS="${PARAMS} -nonAdd "
 echo -n "starting: "
 date
 
-
 echo "================================================================"
 echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
 echo "================================================================"
 echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
-numactl -C 0-15 singularity exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+numactl -C 0-15 singularity exec ${SING_IMAGE} ${COMMAND} ${PARAMS}
 
 echo -n "ending: "
 date
