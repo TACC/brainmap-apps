@@ -81,7 +81,7 @@ echo "================================================================"
 echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
-numactl -C 0-15 singularity exec ${SING_IMAGE} ${COMMAND} ${PARAMS}
+numactl -C 0-15 singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}
 
 echo -n "ending: "
 date
