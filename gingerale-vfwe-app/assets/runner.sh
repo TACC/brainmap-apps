@@ -1,28 +1,25 @@
 # Allow over-ride
 if [ -z "${CONTAINER_IMAGE}" ]
 then
-    version=$(cat ./_util/VERSION)
-    CONTAINER_IMAGE="index.docker.io/wjallen/gingerale:${version}"
+    CONTAINER_IMAGE="wjallen/gingerale:3.0.2"
 fi
-. lib/container_exec.sh
+
+SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
+SING_IMG="${SING_IMG}.sif"
+singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 # silence xalt errors
 module unload xalt
-
-
 
 #export LC_ALL=C
 COMMAND=" java -Xmx16G -Xms16G -cp /app/GingerALE.jar "
 PARAMS=" "
 
-
 # ALE Testing and Significance
 if [ 1 ];
 then
-
 	COMMAND="${COMMAND} org.brainmap.meta.getALE2 "
 fi
-
 
 if [ -n "${foci_text}" ];
 then
@@ -38,7 +35,6 @@ else
 	exit
 fi
 
-
 if [ -n "${fwe}" ];
 then
         PARAMS="${PARAMS} -fwe=${fwe} "
@@ -53,7 +49,6 @@ else
         PARAMS="${PARAMS} -perm=5000 "
 fi
 
-
 if [ -n "${minVol}" ];
 then
 	PARAMS="${PARAMS} -minVol=${minVol} "
@@ -61,14 +56,12 @@ else
 	PARAMS="${PARAMS} -minVol=9 "
 fi
 
-
 # Add Mask File
 MASK_FILE="${coord_space}${mask_size}"
 
 if [ -n "${MASK_FILE}" ];
 then
         PARAMS="${PARAMS} -mask=masks/${MASK_FILE} "
-
 else
         PARAMS="${PARAMS} -mask=masks/Tal_wb_dil.nii.gz "
 fi
@@ -78,8 +71,19 @@ fi
 PARAMS="${PARAMS} -nonAdd "
 
 
+# Log commands, timing, run job
+echo -n "starting: "
+date
+
+
 echo "================================================================"
-echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
+echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
+echo "================================================================"
+echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
 echo "================================================================"
 
-time container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+numactl -C 0-15 singularity exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+
+echo -n "ending: "
+date
+
