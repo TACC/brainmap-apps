@@ -1,27 +1,25 @@
 # Allow over-ride
 if [ -z "${CONTAINER_IMAGE}" ]
 then
-    version=$(cat ./_util/VERSION)
-    CONTAINER_IMAGE="index.docker.io/wjallen/gingerale:${version}"
+    CONTAINER_IMAGE="wjallen/gingerale:3.0.2"
 fi
-. lib/container_exec.sh
+
+SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
+SING_IMG="${SING_IMG}.sif"
+singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 # silence xalt errors
 module unload xalt
-
 
 #export LC_ALL=C
 COMMAND=" java -Xms16G -Xmx16G -cp /app/GingerALE.jar "
 PARAMS=" "
 
-
 # ALE Testing and Significance
 if [ 1 ];
 then
-
 	COMMAND="${COMMAND} org.brainmap.meta.getALE2 "
 fi
-
 
 if [ -n "${foci_text}" ];
 then
@@ -36,7 +34,6 @@ else
 	echo "Error: must specify foci text"
 	exit
 fi
-
 
 # Add -nonAdd flag
 PARAMS="${PARAMS} -nonAdd "
@@ -56,11 +53,26 @@ else
 fi
 # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 
+# Hack in this command to get peaks
+COMMAND2=" java -cp /app/GingerALE.jar org.brainmap.meta.getClustersStats "
+FILE_PREFIX=`basename ${foci_text} .txt`
+PARAMS2=" ${FILE_PREFIX}_ALE.nii ${FILE_PREFIX}_ALE.nii -mni "
 
 
+# Log commands, timing, run job
+echo -n "starting: "
+date
 
 echo "================================================================"
-echo "COMMAND = container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}"
+echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
+echo "================================================================"
+echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
+echo "================================================================"
+echo "COMMAND2 = singularity exec ${SING_IMG} ${COMMAND2} ${PARAMS2} "
 echo "================================================================"
 
-time container_exec ${CONTAINER_IMAGE} ${COMMAND} ${PARAMS}
+numactl -C 0 singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}
+singularity exec ${SING_IMG} ${COMMAND2} ${PARAMS2}
+
+echo -n "ending: "
+date

@@ -70,6 +70,10 @@ fi
 # Add -nonAdd flag
 PARAMS="${PARAMS} -nonAdd "
 
+# Hack in this command to get peaks
+COMMAND2=" java -cp /app/GingerALE.jar org.brainmap.meta.getClustersStats "
+FILE_PREFIX=`basename ${foci_text} .txt`
+PARAMS2=" ${FILE_PREFIX}_*FWE*_ALE.nii ${FILE_PREFIX}_*FWE*_clust.nii -mni "
 
 # Log commands, timing, run job
 echo -n "starting: "
@@ -80,8 +84,11 @@ echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAI
 echo "================================================================"
 echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
 echo "================================================================"
+echo "COMMAND2 = singularity exec ${SING_IMG} ${COMMAND2} ${PARAMS2} "
+echo "================================================================"
 
 numactl -C 0-15 singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}
+singularity exec ${SING_IMG} ${COMMAND2} ${PARAMS2}
 
 echo -n "ending: "
 date
