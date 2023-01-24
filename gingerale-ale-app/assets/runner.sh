@@ -56,7 +56,7 @@ fi
 # Hack in this command to get peaks
 COMMAND2=" java -cp /app/GingerALE.jar org.brainmap.meta.getClustersStats "
 FILE_PREFIX=`basename ${foci_text} .txt`
-PARAMS2=" ${FILE_PREFIX}_ALE.nii ${FILE_PREFIX}_ALE.nii -mni "
+PARAMS2=" ${FILE_PREFIX}_ALE.nii masks/${MASK_FILE} -mni "
 
 
 # Log commands, timing, run job
