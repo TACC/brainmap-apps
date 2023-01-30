@@ -11,7 +11,7 @@
   "longDescription": "Author-topic modeling is a flexible tool for exploring heterogeneity in ALE-type meta-analyses that might arise from functional subdomains, mental disorder subtypes or task-dependent co-activation patterns.",
   "modules": [
     "load tacc-singularity",
-    "load matlab"
+    "load matlab/2022b"
   ],
   "ontology": [],
   "parallelism": "SERIAL",

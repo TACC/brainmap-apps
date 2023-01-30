@@ -40,6 +40,25 @@ echo "================================================================"
 
 singularity exec ${ENVIRON} ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS}
 
+echo "================================================================"
+echo "Removing the following intermediate files:"
+echo "  ./author-topic_1.0.0.sif"
+echo "  ./data/ActivationVolumes/*.nii"
+echo "  ./data/BinarySmoothedVolumes/*.nii"
+echo "  ./outputs/K1/alpha100_eta0.01/*.mat"
+echo "  ./outputs/K2/alpha100_eta0.01/*.mat"
+echo "  ./outputs/K3/alpha100_eta0.01/*.mat"
+echo "  ./outputs/K4/alpha100_eta0.01/*.mat"
+echo "================================================================"
+
+rm ./author-topic_1.0.0.sif
+rm ./data/ActivationVolumes/*.nii
+rm ./data/BinarySmoothedVolumes/*.nii
+rm ./outputs/K1/alpha100_eta0.01/*.mat
+rm ./outputs/K2/alpha100_eta0.01/*.mat
+rm ./outputs/K3/alpha100_eta0.01/*.mat
+rm ./outputs/K4/alpha100_eta0.01/*.mat
+
 echo -n "ending: "
 date
 

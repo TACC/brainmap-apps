@@ -10,14 +10,15 @@ addpath(fullfile(getenv('CBIG_CODE_DIR'), 'utilities', 'matlab', 'fslr_matlab'))
 addpath(fullfile(getenv('CBIG_CODE_DIR'), 'utilities', 'matlab', 'figure_utilities', 'draw_surface_data_as_annotation', 'colorscale'));
 addpath(fullfile(getenv('CBIG_CODE_DIR'), 'external_packages', 'SD', 'SDv1.5.1-svn593', 'BasicTools'));
 addpath(fullfile(getenv('CBIG_CODE_DIR'), 'external_packages', 'SD', 'SDv1.5.1-svn593', 'kd_tree'));
-addpath(fullfile(getenv('CBIG_CODE_DIR'), 'external_packages', 'matlab', 'default_packages', 'cifti-matlab'));
+%addpath(fullfile(getenv('CBIG_CODE_DIR'), 'external_packages', 'matlab', 'default_packages', 'cifti-matlab', '@gifti'));
 addpath(fullfile('/opt', 'freesurfer', 'matlab'));
 
 
 % Pre-process MNI152 coordinates of activation foci in raw text input data
 textFilePath = fullfile(pwd, getenv('foci_text'));
+[data_file, data_name, data_ext] = fileparts(textFilePath);
 dataDirPath = fullfile(pwd, 'data');
-dataFileName = 'output_CVBData.mat';
+dataFileName = strcat(data_name, '_CVBData.mat');
 mkdir ( [ dataDirPath '/ActivationVolumes' ] );
 mkdir ( [ dataDirPath '/BinarySmoothedVolumes' ] );
 mkdir ( [ dataDirPath '/mask' ] );
