@@ -51,13 +51,13 @@ echo "  ./outputs/K3/alpha100_eta0.01/*.mat"
 echo "  ./outputs/K4/alpha100_eta0.01/*.mat"
 echo "================================================================"
 
-rm ./author-topic_1.0.0.sif
-rm ./data/ActivationVolumes/*.nii
-rm ./data/BinarySmoothedVolumes/*.nii
-rm ./outputs/K1/alpha100_eta0.01/*.mat
-rm ./outputs/K2/alpha100_eta0.01/*.mat
-rm ./outputs/K3/alpha100_eta0.01/*.mat
-rm ./outputs/K4/alpha100_eta0.01/*.mat
+rm -f ./author-topic_1.0.0.sif
+rm -f ./data/ActivationVolumes/*.nii
+rm -f ./data/BinarySmoothedVolumes/*.nii
+rm -f ./outputs/K1/alpha100_eta0.01/*.mat
+rm -f ./outputs/K2/alpha100_eta0.01/*.mat
+rm -f ./outputs/K3/alpha100_eta0.01/*.mat
+rm -f ./outputs/K4/alpha100_eta0.01/*.mat
 
 echo -n "ending: "
 date

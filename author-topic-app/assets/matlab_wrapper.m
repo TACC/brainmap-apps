@@ -1,3 +1,6 @@
+% turn off local mpi to get parpool to work
+distcomp.feature( 'LocalUseMpiexec', false )
+
 % Add paths to functions specific to author-topic model
 CBIG_CODE_DIR = getenv('CBIG_CODE_DIR');
 addpath(fullfile(getenv('CBIG_CODE_DIR'), 'stable_projects', 'meta-analysis', 'Ngo2019_AuthorTopic', 'utilities', 'preprocessing'));
