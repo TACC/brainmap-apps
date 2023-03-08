@@ -18,3 +18,12 @@ run:
 
 push:
 	docker push wjallen/fsl:6.0.5
+
+
+
+
+disable:
+	tapis apps disable ${APPID}
+
+enable: 
+	tapis apps enable ${APPID}
