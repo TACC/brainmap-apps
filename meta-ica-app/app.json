@@ -22,8 +22,8 @@
   "inputs": [    {
     "id": "input_file",
     "details": {
-      "label": "Input Sleuth Workspace",
-      "description": "Raw Sleuth workspace exported by experiment",
+      "label": "Foci Text",
+      "description": "The text file of foci data to use",
       "required": true
     },
     "semantics": {}
