@@ -18,7 +18,8 @@
   "templatePath": "runner.sh",
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
-  "defaultMaxRunTime": "02:00:00",
+  "defaultMaxRunTime": "12:00:00",
+  "defaultQueue": "normal",
   "inputs": [    {
     "id": "foci_text",
     "details": {
