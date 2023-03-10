@@ -1,5 +1,14 @@
 APPID ?= wallen-mango-4.1
 
+list:
+	tapis apps search --id start wallen
+
+deploy:
+	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
+
+update:
+	tapis apps update -F app.json --ini project.ini ${APPID}
+
 
 build:
 	docker build -t wjallen/mango:4.1 .
@@ -13,13 +22,3 @@ inter:
 
 push:
 	docker push wjallen/mango:4.1
-
-
-list:
-	tapis apps search --id start wallen
-
-deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}

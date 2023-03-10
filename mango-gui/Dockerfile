@@ -1,9 +1,12 @@
 FROM openjdk:17.0.2-jdk
 
-RUN microdnf install unzip
+RUN microdnf upgrade && \
+    microdnf install unzip libXext libXrender libXtst
 
-RUN curl -O http://rii.uthscsa.edu/mango/downloads/mango_unix.zip \
-    && unzip mango_unix.zip
+COPY ./src/Plugins /app/Plugins
+COPY ./src/mango_unix.zip /app/
 
-COPY ./src/Plugins /Plugins
-RUN chmod -R go=u /Plugins
+RUN cd /app && \
+    unzip mango_unix.zip && \
+    rm mango_unix.zip && \
+    chmod -R go=u /app
