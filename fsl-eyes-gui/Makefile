@@ -1,5 +1,14 @@
 APPID ?= wallen-fsl-eyes-1.3.0
 
+list:
+	tapis apps search --id start wallen
+
+deploy:
+	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
+
+update:
+	tapis apps update -F app.json --ini project.ini ${APPID}
+
 
 build:
 	docker build -t wjallen/fsleyes:1.3.0 .
@@ -13,13 +22,3 @@ inter:
 
 push:
 	docker push wjallen/fsleyes:1.3.0
-
-
-list:
-	tapis apps search --id start wallen
-
-deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
