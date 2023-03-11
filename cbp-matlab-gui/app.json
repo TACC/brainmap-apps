@@ -1,25 +1,26 @@
 {
     "checkpointable": false,
     "name": "wallen-{{ app.name }}",
-    "executionSystem": "tacc.stampede2.wallen",
+    "executionSystem": "tacc.lonestar6.wallen",
     "executionType": "HPC",
-    "deploymentPath": "apps/wallen-{{ app.name }}-{{ app.version }}",
-    "deploymentSystem": "tacc.work.wallen",
-    "helpURI": "https://github.com/TACC/brainmap-apps/blob/main/cbp-matlab-app/CBP-Manual.pdf",
+    "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+    "deploymentSystem": "cloud.corral.work.wallen",
+    "helpURI": "https://github.com/TACC/brainmap-apps/blob/main/cbp-matlab-gui/CBP-Manual.pdf",
     "label": "{{ app.label }}",
     "shortDescription": "{{ app.description }}",
-    "longDescription": "Perform CBP in an interactive MATLAB 2021b session. Submit a help ticket to get your license configured or approved.",
+    "longDescription": "Perform Co-activation Based Parcellation (CBP) in an interactive MATLAB 2022b session. Submit a help ticket to get your license configured or approved.",
     "modules": [
-        "matlab/2021b"
+        "load matlab/2022b",
+        "load swr/21.2.5"
     ],
     "ontology": [],
     "parallelism": "SERIAL",
-    "tags": [ "DCV" ],
+    "tags": [ "VNC", "DCV" ],
     "templatePath": "wrapper.sh",
     "testPath": "test/test.sh",
     "version": "{{ app.version }}",
     "defaultMaxRunTime": "12:00:00",
-    "defaultQueue": "skx-normal",
+    "defaultQueue": "normal",
     "inputs": [
         {
             "id": "workingDirectory",
@@ -51,32 +52,6 @@
         }
     ],
     "parameters": [
-        {
-            "id": "_license",
-            "value": {
-                "visible": true,
-                "required": true,
-                "type": "string",
-                "order": 0,
-                "enquote": false,
-                "default": "",
-                "validator": ""
-            },
-            "details": {
-                "label": "Matlab License File Text",
-                "description": "The text that should be put in the Matlab license file.",
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xs:string"
-                ]
-            }
-        },
         {
             "id": "desktop_resolution",
             "value": {
@@ -136,6 +111,58 @@
             },
             "details": {
                 "label": "Base portal webhook url.",
+                "description": null,
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ]
+            }
+        },
+        {
+            "id": "_XTERM_CMD",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "string",
+                "order": 2,
+                "enquote": false,
+                "default": "swr -t 8 matlab",
+                "validator": null
+            },
+            "details": {
+                "label": "XTERM Program CMD",
+                "description": null,
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:string"
+                ]
+            }
+        },
+        {
+            "id": "_MATLAB_VERSION",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "string",
+                "order": 3,
+                "enquote": false,
+                "default": "2022b",
+                "validator": null
+            },
+            "details": {
+                "label": "Version of matlab to load",
                 "description": null,
                 "argument": null,
                 "showArgument": false,
