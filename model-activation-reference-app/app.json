@@ -18,7 +18,8 @@
   "templatePath": "runner.sh",
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
-  "defaultMaxRunTime": "12:00:00",
+  "defaultMaxRunTime": "48:00:00",
+  "defaultQueue": "normal",
   "inputs": [    {
     "id": "input_tsv",
     "details": {
@@ -30,20 +31,20 @@
   }],
   "parameters": [
     {
-      "id": "format",
+      "id": "coord_space",
       "value": {
         "default": "-tal",
         "type": "enumeration",
         "enum_values": [
-            { "-tal": "-tal" },
-            { "-mni": "-mni" }
+            { "-tal": "Talairach" },
+            { "-mni": "MNI" }
         ],
         "visible": true,
         "required": true
       },
       "details": {
-        "label": "Format",
-        "description": "The format of the input tsv file"
+        "label": "Coordinate Space",
+        "description": "Specify the format of the input tsv file"
       }
     },
     {
@@ -63,6 +64,23 @@
       "details": {
         "label": "Mask Image",
         "description": "The NIfTI image to use as a mask"
+      }
+    },
+    {
+      "id": "output_format",
+      "value": {
+        "default": "macm",
+        "type": "enumeration",
+        "enum_values": [
+            { "macm": "MACM" },
+            { "cbp": "CBP" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Output Format",
+        "description": "The output format to be used as input to either MACM or CBP"
       }
     },
     {
