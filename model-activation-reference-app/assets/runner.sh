@@ -106,7 +106,7 @@ do
     ((i=i%$N)); ((i++==0)) && wait
     singularity --quiet exec ${SING_IMG} ${CMD2} ${OPT2} $FILE \
     && NEW_FILE=$( basename $FILE .txt ) \
-    && mv ${TEMPDIR1}/${NEW_FILE}*nii.gz ${TEMPDIR2}/ &
+    && mv ${TEMPDIR1}/${NEW_FILE}.nii.gz ${TEMPDIR2}/ &
 done
 
 
@@ -198,6 +198,7 @@ singularity --quiet exec ../${SING_IMG} ${CMD5} ${OPT5}
 cd ../ 
 
 
+# For CBP, remove 1D output dir; just keep CC output dir
 # Clean up
 echo "================================================================"
 echo -n "Ending: Packing up output for archive, "
@@ -208,6 +209,7 @@ tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
 tar -czf output.tar.gz ${OUTPUT}
 find ${OUTPUT} | sort > output_manifest.txt
 rm -rf exps_for_macm/ ${TEMPDIR2} ${TEMPDIR3} ${OUTPUT}
+rm ${SING_IMG}
 
 echo -n "Done: "
 date
