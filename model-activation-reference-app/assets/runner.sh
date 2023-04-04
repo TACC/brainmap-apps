@@ -68,6 +68,8 @@ fi
 
 # Log commands, timing, run job
 echo "================================================================"
+echo -n "Pulling container, "
+date
 echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
 echo "================================================================"
 
@@ -208,6 +210,7 @@ echo -n "Ending: Packing up output for archive, "
 date
 echo "================================================================"
 mv ${TEMPDIR1} exps_for_macm
+find exps_for_macm | sort > exps_for_macm_manifest.txt
 tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
 tar -czf output.tar.gz ${OUTPUT}
 find ${OUTPUT} | sort > output_manifest.txt
