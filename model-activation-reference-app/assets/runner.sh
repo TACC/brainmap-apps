@@ -108,6 +108,7 @@ do
     && NEW_FILE=$( basename $FILE .txt ) \
     && mv ${TEMPDIR1}/${NEW_FILE}.nii.gz ${TEMPDIR2}/ &
 done
+sleep 10
 
 
 # Step 3: Scale Images
@@ -143,6 +144,7 @@ elif [ "${output_format}" == "macm" ];
 then
     echo "not scaling because this is macm"
 fi
+sleep 10
 
 
 CMD32="fslmaths" 
@@ -164,6 +166,7 @@ do
     FILE_BN=$( basename $FILE ) \
     && singularity --quiet exec ${SING_IMG} ${CMD32} $FILE ${OPT32a} ${TEMPDIR3}/$FILE_BN ${OPT32b} &
 done
+sleep 10
 
 
 # Step 4: Merge
