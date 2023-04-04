@@ -6,7 +6,6 @@ fi
 
 SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
 SING_IMG="${SING_IMG}.sif"
-singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 # silence xalt errors
 module unload xalt
@@ -72,6 +71,7 @@ echo -n "Pulling container, "
 date
 echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
 echo "================================================================"
+singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 
 # Step 1: Split Experiments
@@ -92,10 +92,12 @@ if [ "${output_format}" == "cbp" ];
 then
     CMD2="java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap "
     OPT2="-expanded -gzip $FORMAT -mask=${MASK}"
+    FILE_SLUG="_ALE"
 elif [ "${output_format}" == "macm" ];
 then
     CMD2="java -cp /app/GingerALE.jar org.brainmap.meta.getFociImage "
     OPT2="-gzip $FORMAT -mask=${MASK}"
+    FILE_SLUG=""
 fi
 echo "================================================================"
 echo -n "starting step 2: Get meta activation maps or foci images, "
@@ -108,7 +110,7 @@ do
     ((i=i%$N)); ((i++==0)) && wait
     singularity --quiet exec ${SING_IMG} ${CMD2} ${OPT2} $FILE \
     && NEW_FILE=$( basename $FILE .txt ) \
-    && mv ${TEMPDIR1}/${NEW_FILE}.nii.gz ${TEMPDIR2}/ &
+    && mv ${TEMPDIR1}/${NEW_FILE}${FILE_SLUG}.nii.gz ${TEMPDIR2}/ &
 done
 sleep 10
 
@@ -190,7 +192,6 @@ singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
 
 # Step 5: Generate Voxelwise Output
 # Will generate a ton of output nifti
-# for CBP - currently working but needs to be sped up and files need to be put in more directories
 cd ${OUTPUT}
 CMD5="python3 /MAR/voxelwise.py"
 OPT5="mar_4d.nii.gz ${OUTPUT_FLAG}"
@@ -209,12 +210,19 @@ echo "================================================================"
 echo -n "Ending: Packing up output for archive, "
 date
 echo "================================================================"
-mv ${TEMPDIR1} exps_for_macm
-find exps_for_macm | sort > exps_for_macm_manifest.txt
-tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
+if [ "${output_format}" == "macm" ];
+then
+    mv ${TEMPDIR1} exps_for_macm
+    find exps_for_macm | sort > exps_for_macm_manifest.txt
+    tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
+    rm -rf exps_for_macm/
+elif [ "${output_format}" == "cbp" ];
+then
+    rm -rf ${TEMPDIR1}
+fi
 tar -czf output.tar.gz ${OUTPUT}
 find ${OUTPUT} | sort > output_manifest.txt
-rm -rf exps_for_macm/ ${TEMPDIR2} ${TEMPDIR3} ${OUTPUT}
+rm -rf ${TEMPDIR2} ${TEMPDIR3} ${OUTPUT}
 rm ${SING_IMG}
 
 echo -n "Done: "
