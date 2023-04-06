@@ -11,15 +11,14 @@ SING_IMG="${SING_IMG}.sif"
 module unload xalt
 
 # set up temp dirs
-TEMPDIR1="./tempdir1"
-TEMPDIR2="./tempdir2"
-TEMPDIR3="./tempdir3"
-OUTPUT="./output"
+TEMPDIR1="/tmp/tempdir1"
+TEMPDIR2="/tmp/tempdir2"
+TEMPDIR3="/tmp/tempdir3"
+OUTPUT="/tmp/output"
 mkdir ${TEMPDIR1}
 mkdir ${TEMPDIR2}
 mkdir ${TEMPDIR3}
 mkdir ${OUTPUT}
-
 
 # Step 0: Gather input
 
@@ -42,9 +41,9 @@ fi
 # mask can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 if [ -n "${mask_file}" ];
 then
-    MASK="masks/${mask_file}"
+    MASK="${mask_file}"
 else
-    MASK="masks/Tal_wb_dil.nii.gz"
+    MASK="Tal_wb_dil.nii.gz"
 fi
 
 # output can be formatted for macm or cbp
@@ -64,6 +63,11 @@ else
     IMAGE_TYPE="char"
 fi
 
+# do this on /tmp
+JOB_DIR=`pwd`
+cp masks/${MASK} /tmp
+cp ${INPUT} /tmp
+cd /tmp
 
 # Log commands, timing, run job
 echo "================================================================"
@@ -216,14 +220,19 @@ then
     find exps_for_macm | sort > exps_for_macm_manifest.txt
     tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
     rm -rf exps_for_macm/
+    mv exps_for_macm_manifest.txt ${JOB_DIR}
+    mv exps_for_macm.tar.gz ${JOB_DIR}
 elif [ "${output_format}" == "cbp" ];
 then
     rm -rf ${TEMPDIR1}
 fi
 tar -czf output.tar.gz ${OUTPUT}
 find ${OUTPUT} | sort > output_manifest.txt
+mv output_manifest.txt ${JOB_DIR}
+mv output.tar.gz ${JOB_DIR}
 rm -rf ${TEMPDIR2} ${TEMPDIR3} ${OUTPUT}
 rm ${SING_IMG}
+
 
 echo -n "Done: "
 date
