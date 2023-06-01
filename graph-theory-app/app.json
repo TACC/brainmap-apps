@@ -65,9 +65,9 @@
       "value": {
         "default": "0",
         "enumValues":[
-          {"0":"0"}, 
-          {"2":"1"}, 
-          {"3":"2"}],
+          {"0":"No filtering"}, 
+          {"1":"Experiment-level filtering"}, 
+          {"2":"Paper-level filtering"}],
         "type": "enumeration",
         "visible": true, 
         "required": true,
@@ -75,7 +75,7 @@
       },
       "details": {
         "label": "Filter",
-        "description": "Either 0, 1, or 2, corresponding to no filtering, experiment-level filtering, or paper-level filtering"
+        "description": "Choose type of filtering to be performed"
       }
     },
     {
