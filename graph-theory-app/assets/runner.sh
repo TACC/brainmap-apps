@@ -18,7 +18,6 @@ COMMAND=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
 PARAMS=" -nodesktop -nodisplay -nosplash "
 MATLAB_FUNC="gtm ${PWD}/xGTM_portal/ ${foci_text} ${radius} ${ale} ${filter}"
 
-
 # Pull some assets out of container, input file needs to be in asset dir
 singularity exec ${SING_IMG} cp -r /xGTM_portal .
 mv ${foci_text} xGTM_portal/
@@ -37,8 +36,9 @@ echo "================================================================"
 singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
 mkdir output/
-mv xGTM_portal/${foci_text} ./
-mv xGTM_portal/${foci_text%.*}* ./output/
+_FOCI_TEXT="${foci_text}"
+mv xGTM_portal/${_FOCI_TEXT} ./
+mv xGTM_portal/${_FOCI_TEXT%.*}* ./output/
 
 if [ "${filter}" == "0" ]; then
     tar -czf per-experiment_TXTfiles-noFilter.tar.gz -C xGTM_portal/ per-experiment_TXTfiles-noFilter
