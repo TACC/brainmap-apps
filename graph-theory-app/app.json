@@ -1,0 +1,93 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.lonestar6.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
+  "helpURI": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4782802/",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "Graph theory modeling constructs may be useful to infer brain networks from neuroimages.",
+  "modules": [
+    "load tacc-singularity",
+    "load matlab/2022b"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "12:00:00",
+  "defaultQueue": "normal",
+  "inputs": [    {
+    "id": "foci_text",
+    "details": {
+      "label": "Foci Text",
+      "description": "The text file of foci data to use in MNI format",
+      "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
+      "required": true
+    },
+    "semantics": {}
+  }],
+  "parameters": [
+    {
+      "id": "radius",
+      "value": {
+        "default": 6,
+        "type": "Number",
+        "visible": true, 
+        "required": true,
+        "order": 1000
+      },
+      "details": {
+        "label": "Radius",
+        "description": "the ROI radius to use for overlapping-coordinate removal"
+      }
+    },
+    {
+      "id": "ale",
+      "value": {
+        "default": 75,
+        "type": "Number",
+        "visible": true, 
+        "required": true,
+        "order": 1000
+      },
+      "details": {
+        "label": "Ale Threshold",
+        "description": "The percent (%) ALE threshold that should be used for node selection (from 0 to 99)"
+      }
+    },
+    {
+      "id": "filter",
+      "value": {
+        "default": "0",
+        "enumValues":[
+          {"0":"0"}, 
+          {"2":"1"}, 
+          {"3":"2"}],
+        "type": "enumeration",
+        "visible": true, 
+        "required": true,
+        "order": 1000
+      },
+      "details": {
+        "label": "Filter",
+        "description": "Either 0, 1, or 2, corresponding to no filtering, experiment-level filtering, or paper-level filtering"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
