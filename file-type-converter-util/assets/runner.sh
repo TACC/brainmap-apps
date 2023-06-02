@@ -41,22 +41,19 @@ singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC
 
 mv ${output_filename} temp_temp_temp.txt
 
-
-# TODO if first line contains 'MNI' replace with 'Talairach' and vice versa
-
 # chop output back together with input
 while IFS= read -r line; do
-  if [[ $line == "/"* ]] || [[ -z $line ]]; then
-    echo "$line" >> "${output_filename}"
-  elif [[ $line == [0-9]* ]]; then
-    other_line=$(head -n 1 "temp_temp_temp.txt")
-    echo "$other_line" >> "${output_filename}"
-    sed -i '1d' "temp_temp_temp.txt"  # Remove the first line from the second file
-  elif [[ $line == "-"* ]]; then
-    other_line=$(head -n 1 "temp_temp_temp.txt")
-    echo "$other_line" >> "${output_filename}"
-    sed -i '1d' "temp_temp_temp.txt"  # Remove the first line from the second file
-  fi
+    if [[ $line == "// Reference=MNI" ]]; then
+        echo "// Reference=Talairach" >> "${output_filename}"
+    elif [[ $line == "// Reference=T"* ]]; then
+        echo "// Reference=MNI" >> "${output_filename}"
+    elif [[ $line == "/"* ]] || [[ -z $line ]]; then
+        echo "$line" >> "${output_filename}"
+    elif [[ $line == [0-9]* ]] || [[ $line == "-"* ]]; then
+        other_line=$(head -n 1 "temp_temp_temp.txt")
+        echo "$other_line" >> "${output_filename}"
+        sed -i '1d' "temp_temp_temp.txt"  # Remove the first line from the second file
+    fi
 done < ${input_file}
 
 
