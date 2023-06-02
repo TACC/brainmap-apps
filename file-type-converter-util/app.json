@@ -8,7 +8,7 @@
   "helpURI": "https://brainmap.org/icbm2tal/",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": "BrainMap uses an implementation of the icbm2tal transform to conver between MNI coordinates and Talairach space. Separate best-fit transforms were determined for SPM2 and FSL. A best-fit icbm2tal transform was also formulated by pooling SPM2 and FSL data.",
+  "longDescription": "BrainMap uses an implementation of the icbm2tal transform to convert between MNI coordinates and Talairach space. Separate best-fit transforms were determined for SPM2 and FSL. A best-fit icbm2tal transform was also formulated by pooling SPM2 and FSL data.",
   "modules": [
     "load tacc-singularity",
     "load matlab/2022b"
