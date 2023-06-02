@@ -10,7 +10,8 @@
   "shortDescription": "{{ app.description }}",
   "longDescription": "MELODIC ( Multivariate Exploratory Linear Optimized Decomposition into Independent Components ) 3.0 uses Independent Component Analysis to decompose a single or multiple 4D data sets into different spatial and temporal components. For ICA group analysis, MELODIC uses either Tensorial Independent Component Analysis (TICA, where data is decomposed into spatial maps, time courses and subject/session modes) or a simpler temporal concatenation approach. MELODIC can pick out different activation and artefactual components without any explicit time series model being specified.",
   "modules": [
-    "load tacc-singularity"
+    "load tacc-singularity",
+    "load matlab/2022b"
   ],
   "ontology": [],
   "parallelism": "SERIAL",
@@ -19,11 +20,13 @@
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
   "defaultMaxRunTime": "12:00:00",
+  "defaultQueue": "normal",
   "inputs": [    {
-    "id": "input_file",
+    "id": "foci_text",
     "details": {
       "label": "Foci Text",
-      "description": "The text file of foci data to use",
+      "description": "The text file of foci data to use in MNI format",
+      "default": "",
       "required": true
     },
     "semantics": {}

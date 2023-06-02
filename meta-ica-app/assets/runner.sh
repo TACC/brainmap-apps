@@ -1,127 +1,196 @@
 # Allow over-ride
 if [ -z "${CONTAINER_IMAGE}" ]
 then
-   version=$(cat ./_util/VERSION)
-    CONTAINER_IMAGE="index.docker.io/library/ubuntu:bionic"
+    CONTAINER_IMAGE="wjallen/meta-ica:1.0.0"
 fi
-. lib/container_exec.sh
+
+SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
+SING_IMG="${SING_IMG}.sif"
+
+
+# Silence xalt errors
 module unload xalt
-module load matlab
 
-SING_IMG='ica_1.0.0.sif'
+# set up temp dirs
+#TEMPDIR1="/tmp/tempdir1"
+#TEMPDIR2="/tmp/tempdir2"
+#TEMPDIR3="/tmp/tempdir3"
+#OUTPUT="/tmp/output"
+TEMPDIR1="tempdir1"
+TEMPDIR2="tempdir2"
+TEMPDIR3="tempdir3"
+OUTPUT="output"
+mkdir ${TEMPDIR1}
+mkdir ${TEMPDIR2}
+mkdir ${TEMPDIR3}
+mkdir ${OUTPUT}
+
+
+# Step 0: Gather input
+# input file name
+if [ -n "${foci_text}" ];
+then
+    INPUT="${foci_text}"
+else
+    INPUT="vbm_mni_exp.txt"
+fi
+
+# coord space can be Tal_wb or MNI152_wb
+if [[ "${coord_space}" == "Tal_wb "]];
+then
+    COORD_SPACE="${coord_space}"
+    FORMAT="-tal"
+elif [[ $"{coord_space}" == "MNI152_wb" ]];
+then
+    COORD_SPACE="${coord_space}"
+    FORMAT="-mni"
+fi
+
+MASK="${coord_space}${mask_size}"
+
+# dimensionality reduction
+if [ -n "${dim_red}" ];
+then
+    DIM_RED="${dim_red}"
+else
+    DIM_RED="20"
+fi
+
+# do this on /tmp
+#JOB_DIR=`pwd`
+#cp masks/${MASK} /tmp
+#cp ${INPUT} /tmp
+#cd /tmp
+
+# Log commands, timing, run job
+echo "================================================================"
+echo -n "Pulling container, "
+date
+echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
+echo "================================================================"
 singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
-dos2unix ${input_file}
-
-# Unpack user provided input tar.gz file
-#date
-#echo "Unpacking input tarball..."
-#mkdir input/ temp1/ temp2/ output/
-#tar -xzvf ${input_tarball} -C input --strip-components=1
-#echo ""
 
 
-# # Step 0: Filter and parse input
-# date
-# echo "Filtering and parsing input..."
-# mkdir input/ temp1/ temp2/ output/
-# singularity --quiet exec ${SING_IMG} cp /app/make_lists_experiment_files_v5 .
-# matlab -nodesktop -nodisplay -nosplash < make_lists_experiment_files_v5 ${input_file}
-# echo ""
-
-# Step 0: Filter and parse input
+# Step 1: Filter and parse input
+BINDPATH=" --bind /opt/intel:/opt/intel "
+CMD1=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
+OPT1=" -nodesktop -nodisplay -nosplash "
+MATLAB_FUNC=" make_per_experiment_TXTfiles_for_meta_ICA ${INPUT} ./ 0 "
+echo "================================================================"
+echo -n "Starting step 1: Filtering and parsing input, "
 date
-echo "Filtering and parsing input..."
-mkdir input/ temp1/ temp2/ output/
-awk -v RS= '{print > ("input/data_" NR ".txt")}' ${input_file}
+echo "COMMAND1 = singularity exec ${BINDPATH} ${SING_IMG} ${CMD1} ${OPT1} -r ' ${MATLAB_FUNC} ' "
+echo "================================================================"
+singularity exec ${SING_IMG} cp -r /app/make_per_experiment_TXTfiles_for_meta_ICA.m .
+singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
 
-echo ""
+# Step 1: Filter and parse input
+#dos2unix ${foci_text}
+#awk -v RS= '{print > ("${TEMPDIR1}/data_" NR ".txt")}' ${INPUT}
 
 
-# Step 1: Get Activation Maps
+# Step 2: Get Activation Maps
+# will generate one nifti image per file
+CMD2="java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap "
+OPT2="-expanded -gzip ${_FORMAT} -mask=masks/$MASK "
+echo "================================================================"
+echo -n "Starting step 2: Getting activation maps with GingerALE, "
 date
-echo "Getting activation maps with GingerALE..."
-REF="-${coord_space}"   # can be -tal or -mni
-MASK="masks/${coord_space}${mask_size}"   # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
-
-N=40
-
-for FILE in input/*
+echo "COMMAND2 = singularity exec ${SING_IMG} ${CMD2} ${OPT2} <each file>"
+echo "================================================================"
+N=40 # N simultaneous processes
+for FILE in ${TEMPDIR1}/*
 do
-  ((i=i%$N)); ((i++==0)) && wait
-  singularity --quiet exec ${SING_IMG} java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap \
-        	                             -expanded -gzip $REF -mask=$MASK $FILE \
-  && NEW_FILE=$( basename $FILE .txt ) \
-  && mv input/${NEW_FILE}_ALE.nii.gz temp1/ &
+    ((i=i%$N)); ((i++==0)) && wait
+    singularity --quiet exec ${SING_IMG} ${CMD2} ${OPT2} $FILE \
+    && NEW_FILE=$( basename $FILE .txt ) \
+    && mv ${TEMPDIR1}/${NEW_FILE}_ALE.nii.gz ${TEMPDIR2}/ &
 done
+sleep 30
 
-find temp1/
-echo ""
 
-# Step 2: Scale Images
-date
-echo "Scaling images..."
+# Step 3: Scale Images
+# will generate one scaled nifti image per file
+CMD31="fslstats" 
+OPT31="-P 100"
 IMAGE_TYPE="short"
 SCALED_MAX="32000"
 MAX_VAL=0
-
-for FILE in temp1/*.nii.gz
+echo "================================================================"
+echo -n "Starting step 3.1: Find scaling factor, "
+date
+echo "COMMAND3.1 = singularity exec ${SING_IMG} ${CMD31} <each file> ${OPT31}"
+echo "================================================================"
+for FILE in ${TEMPDIR2}/*.nii.gz
 do
-  ((i=i%$N)); ((i++==0)) && wait
-  THIS_VAL=` singularity --quiet exec ${SING_IMG} fslstats ${FILE} -P 100 ` \
-  && echo "THIS_VAL = ${THIS_VAL}" \
-  && echo ${THIS_VAL} >> list_of_vals &
+    ((i=i%$N)); ((i++==0)) && wait
+    THIS_VAL=` singularity --quiet exec ${SING_IMG} ${CMD31} $FILE ${OPT31} ` \
+    && echo "THIS_VAL = ${THIS_VAL}" \
+    && echo ${THIS_VAL} >> list_of_vals.txt &
 done
+sleep 30
 
-for VALUE in ` cat list_of_vals `
+for VALUE in ` cat list_of_vals.txt `
 do
-  if (( $(echo "$VALUE > $MAX_VAL" | bc -l) )); then
-    MAX_VAL=$VALUE
-  fi
+    if (( $(echo "$VALUE > $MAX_VAL" | bc -l) )); then
+        MAX_VAL=$VALUE
+    fi
 done
-
 SCALING=` echo "0 k $SCALED_MAX $MAX_VAL / p" | dc - `
-echo "SCALING = $SCALING"
-rm list_of_vals
+echo "scaleImageDir $TEMPDIR2 max $MAX_VAL * $SCALING ~= $SCALED_MAX $IMAGE_TYPE"
+rm list_of_vals.txt
 
-for FILE in temp1/*.nii.gz
-do
-	FILE_BN=$( basename $FILE )
-	singularity --quiet exec ${SING_IMG} fslmaths $FILE -mul $SCALING temp2/$FILE_BN -odt $IMAGE_TYPE
-done
 
-find temp2/
-echo ""
-
-# Step 3: Merge Images
+CMD32="fslmaths" 
+OPT32a="-mul $SCALING"
+OPT32b="-odt $IMAGE_TYPE"
+echo "================================================================"
+echo -n "Starting step 3.2: Scale images, "
 date
-echo "Merging images..."
+echo "COMMAND3.2 = singularity exec ${SING_IMG} ${CMD32} <each file> ${OPT32a} <each out> ${OPT32b}"
+echo "================================================================"
+N=40 # N simultaneous processes
+for FILE in ${TEMPDIR2}/*.nii.gz
+do
+    ((i=i%$N)); ((i++==0)) && wait
+	  FILE_BN=$( basename $FILE ) \
+	  && singularity --quiet exec ${SING_IMG} ${CMD32} $FILE ${OPT32a} ${TEMPDIR3}/$FILE_BN ${OPT32b}
+done
+sleep 30
+
+
+# Step 4: Merge
+# merge all images into one final image
+CMD4="fslmerge"
+OPT4="-t ${OUTPUT}/mar_4d.nii.gz ${TEMPDIR3}/*.nii.gz"
+echo "================================================================"
+echo -n "Starting step 4: Merge, "
+date
+echo "COMMAND4 = singularity exec ${SING_IMG} ${CMD4} ${OPT4}"
+echo "================================================================"
 export LC_ALL=C
-for IMAGE in temp2/*.nii.gz
+for FILE in ${TEMPDIR3}/*.nii.gz
 do
-	echo $IMAGE >> output/mod_4d.txt
+    echo $(basename $FILE) >> ${OUTPUT}/mar_4d.txt;
 done
-
-singularity --quiet exec ${SING_IMG} fslmerge -t output/mod_4d.nii.gz temp2/*nii.gz
-
-find output
-echo ""
+singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
 
 
-
-
-# Step 4: Do ICA with Melodic
+# Step 5: Do ICA with Melodic
+CMD4="melodic"
+OPT4="-i ${OUTPUT}/mod_4d.nii.gz -d ${DIM_RED} -m masks/${MASK} --vn --Oall --report"
+echo "================================================================"
+echo -n "Starting step 4: Merge, "
 date
-echo "Performing ICA with melodic..."
-DIMENSIONALITY="${dim_red}"
-echo "dimensionality reduction = ${DIMENSIONALITY}"
-singularity --quiet exec ${SING_IMG} melodic -i output/mod_4d.nii.gz -d ${DIMENSIONALITY} -m ${MASK} --vn --Oall --report
-
-find output
-echo ""
-
-rm -rf input temp1 temp2
+echo "COMMAND4 = singularity exec ${SING_IMG} ${CMD4} ${OPT4}"
+echo "================================================================"
+singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
 
 
-echo "Finished at:"
+# Clean up
+#rm -rf ${TEMPDIR1} ${TEMPDIR2} ${TEMPDIR3}
+
+
+echo -n "Done: "
 date

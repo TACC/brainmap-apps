@@ -8,6 +8,6 @@ RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm \
 #    mv imglob /usr/local/bin/
 
 COPY src/GingerALE.jar /app/GingerALE.jar
-COPY src/make_lists_experiment_files_v5.m /app/make_lists_experiment_files_v5.m
+COPY src/make_per_experiment_TXTfiles_for_meta_ICA.m /app/make_per_experiment_TXTfiles_for_meta_ICA.m
 
 RUN chmod +rx /app/*

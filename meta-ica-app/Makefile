@@ -1,4 +1,4 @@
-APPID ?= wallen-ica-1.0.0
+APPID ?= wallen-meta-ica-1.0.0
 
 list:
 	tapis apps search --id start wallen
@@ -11,10 +11,10 @@ update:
 
 
 build:
-	docker build -t wjallen/ica:1.0.0 .
+	docker build -t wjallen/meta-ica:1.0.0 .
 
 run:
-	docker run --rm -it -v $$PWD/test:/test wjallen/ica:1.0.0 /bin/bash
+	docker run --rm -it -v $$PWD/test:/test wjallen/meta-ica:1.0.0 /bin/bash
 
 push:
-	docker push wjallen/ica:1.0.0
+	docker push wjallen/meta-ica:1.0.0
