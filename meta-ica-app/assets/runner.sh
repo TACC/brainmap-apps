@@ -36,7 +36,7 @@ else
 fi
 
 # coord space can be Tal_wb or MNI152_wb
-if [[ "${coord_space}" == "Tal_wb "]];
+if [[ "${coord_space}" == "Tal_wb" ]];
 then
     COORD_SPACE="${coord_space}"
     FORMAT="-tal"
