@@ -40,7 +40,7 @@ if [[ "${coord_space}" == "Tal_wb "]];
 then
     COORD_SPACE="${coord_space}"
     FORMAT="-tal"
-elif [[ $"{coord_space}" == "MNI152_wb" ]];
+elif [[ "${coord_space}" == "MNI152_wb" ]];
 then
     COORD_SPACE="${coord_space}"
     FORMAT="-mni"
@@ -75,19 +75,19 @@ singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 BINDPATH=" --bind /opt/intel:/opt/intel "
 CMD1=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
 OPT1=" -nodesktop -nodisplay -nosplash "
-MATLAB_FUNC=" make_per_experiment_TXTfiles_for_meta_ICA ${INPUT} ./ 0 "
+MATLAB_FUNC=" make_per_experiment_TXTfiles_for_meta_ICA ${INPUT} ${PWD} 0 "
 echo "================================================================"
 echo -n "Starting step 1: Filtering and parsing input, "
 date
 echo "COMMAND1 = singularity exec ${BINDPATH} ${SING_IMG} ${CMD1} ${OPT1} -r ' ${MATLAB_FUNC} ' "
 echo "================================================================"
 singularity exec ${SING_IMG} cp -r /app/make_per_experiment_TXTfiles_for_meta_ICA.m .
-singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
+singularity exec ${BINDPATH} ${SING_IMG} ${CMD1} ${OPT1} -r " ${MATLAB_FUNC} "
 
 
 # Step 1: Filter and parse input
-#dos2unix ${foci_text}
-#awk -v RS= '{print > ("${TEMPDIR1}/data_" NR ".txt")}' ${INPUT}
+dos2unix ${foci_text}
+awk -v RS= '{print > ("tempdir1/data_" NR ".txt")}' ${INPUT}
 
 
 # Step 2: Get Activation Maps
@@ -122,6 +122,7 @@ echo -n "Starting step 3.1: Find scaling factor, "
 date
 echo "COMMAND3.1 = singularity exec ${SING_IMG} ${CMD31} <each file> ${OPT31}"
 echo "================================================================"
+N=40 # N simultaneous processes
 for FILE in ${TEMPDIR2}/*.nii.gz
 do
     ((i=i%$N)); ((i++==0)) && wait
@@ -154,8 +155,8 @@ N=40 # N simultaneous processes
 for FILE in ${TEMPDIR2}/*.nii.gz
 do
     ((i=i%$N)); ((i++==0)) && wait
-	  FILE_BN=$( basename $FILE ) \
-	  && singularity --quiet exec ${SING_IMG} ${CMD32} $FILE ${OPT32a} ${TEMPDIR3}/$FILE_BN ${OPT32b}
+	FILE_BN=$( basename $FILE ) \
+    && singularity --quiet exec ${SING_IMG} ${CMD32} $FILE ${OPT32a} ${TEMPDIR3}/$FILE_BN ${OPT32b} &
 done
 sleep 30
 
@@ -163,7 +164,7 @@ sleep 30
 # Step 4: Merge
 # merge all images into one final image
 CMD4="fslmerge"
-OPT4="-t ${OUTPUT}/mar_4d.nii.gz ${TEMPDIR3}/*.nii.gz"
+OPT4="-t ${OUTPUT}/mod_4d.nii.gz ${TEMPDIR3}/*.nii.gz"
 echo "================================================================"
 echo -n "Starting step 4: Merge, "
 date
@@ -172,25 +173,27 @@ echo "================================================================"
 export LC_ALL=C
 for FILE in ${TEMPDIR3}/*.nii.gz
 do
-    echo $(basename $FILE) >> ${OUTPUT}/mar_4d.txt;
+    echo $(basename $FILE) >> ${OUTPUT}/mod_4d.txt;
 done
 singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
 
 
 # Step 5: Do ICA with Melodic
-CMD4="melodic"
-OPT4="-i ${OUTPUT}/mod_4d.nii.gz -d ${DIM_RED} -m masks/${MASK} --vn --Oall --report"
+CMD5="melodic"
+OPT5="-i ${OUTPUT}/mod_4d.nii.gz -d ${DIM_RED} -m masks/${MASK} --vn --Oall --report"
 echo "================================================================"
-echo -n "Starting step 4: Merge, "
+echo -n "Starting step 5: ICA with Melodic, "
 date
-echo "COMMAND4 = singularity exec ${SING_IMG} ${CMD4} ${OPT4}"
+echo "COMMAND5 = singularity exec ${SING_IMG} ${CMD5} ${OPT5}"
 echo "================================================================"
-singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
+singularity --quiet exec ${SING_IMG} ${CMD5} ${OPT5}
 
 
 # Clean up
-#rm -rf ${TEMPDIR1} ${TEMPDIR2} ${TEMPDIR3}
-
+rm -rf ${TEMPDIR1} ${TEMPDIR2} ${TEMPDIR3}
+rm ${SING_IMG}
+rm make_per_experiment_TXTfiles_for_meta_ICA.m
+rm -rf masks/
 
 echo -n "Done: "
 date
