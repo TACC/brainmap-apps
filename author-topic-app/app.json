@@ -5,7 +5,7 @@
   "executionType": "HPC",
   "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
   "deploymentSystem": "cloud.corral.work.wallen",
-  "helpURI": "https://github.com/ThomasYeoLab/Standalone_Ngo2019_AuthorTopic",
+  "helpURI": "https://github.com/ThomasYeoLab/Standalone_Ngo2019_AuthorTopic/tree/master/stable_projects/meta-analysis/Ngo2019_AuthorTopic",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
   "longDescription": "Author-topic modeling is a flexible tool for exploring heterogeneity in ALE-type meta-analyses that might arise from functional subdomains, mental disorder subtypes or task-dependent co-activation patterns.",
@@ -25,7 +25,7 @@
     "id": "foci_text",
     "details": {
       "label": "Foci Text",
-      "description": "The text file of foci data to use in MNI format",
+      "description": "The text file of foci data to use as input (must be in specific format, see link at left)",
       "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
       "required": true
     },
