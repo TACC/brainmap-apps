@@ -39,7 +39,7 @@ if [ -n "${fwe}" ];
 then
         PARAMS="${PARAMS} -fwe=${fwe} "
 else
-        PARAMS="${PARAMS} -few=0.05 "
+        PARAMS="${PARAMS} -fwe=0.05 "
 fi
 
 if [ -n "${perm}" ];
