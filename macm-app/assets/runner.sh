@@ -48,10 +48,6 @@ else
 fi
 
 
-# QUESTION - if we prepare MAR input in Talairach space, then does it mean input
-# seed coordinates have to also be in Talairach space?
-
-
 # Unpack inputs
 tar -xzf ${REF_COORDS} -C /tmp/
 ln -s /tmp/${REF_COORDS_BN} ref_coords   # so voxelwise.py can link to just 'ref_coords' and hit the correct one
