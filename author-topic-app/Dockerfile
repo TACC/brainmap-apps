@@ -58,7 +58,7 @@ RUN wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/5.3.0/freesurfer-L
     tar -xzf freesurfer-Linux-centos4_x86_64-stable-pub-v5.3.0.tar.gz -C /opt && \
     rm /freesurfer-Linux-centos4_x86_64-stable-pub-v5.3.0.tar.gz
 
-COPY freesurfer_license /opt/freesurfer/.license
+COPY test/freesurfer_license /opt/freesurfer/.license
 
 # freesurfer env 
 ENV PATH /opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:${PATH}
