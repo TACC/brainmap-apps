@@ -1,5 +1,4 @@
-GingerALE.jar
-Sleuth.jar
-mango_unix.zip
+*.jar
+*.zip
 */test/
 .DS_Store
