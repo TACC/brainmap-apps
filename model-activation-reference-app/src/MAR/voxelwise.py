@@ -37,6 +37,8 @@ import numpy as np
 # correlation between arrays
 import scipy.stats
 
+from multiprocessing import Pool    # WJA
+
 
 # FSL commands use file names without extensions
 fileExt = ".nii.gz"
@@ -195,7 +197,9 @@ def loadSeriesNames(prefix):
     
     print("\nChecking series order:")
     
-    fOrder = imagePrefix + '_order.txt'
+    # WJA CHANGE
+    #fOrder = imagePrefix + '_order.txt'
+    fOrder = imagePrefix + '.txt'
     if not os.path.exists(fOrder):
         print("\t...Order file does not exist:", fOrder)
         return
@@ -507,6 +511,8 @@ def checkFileNames(dirName):
     if not os.path.exists(dirName):
         print('\t...Creating directory '+ dirName)
         os.makedirs(dirName)
+        for num in range(0,100):     # WJA make subdirs
+            os.makedirs(f'{dirName}/{num:02d}')
         return False
     
     # check files that might already be there
@@ -530,28 +536,32 @@ def checkFileNames(dirName):
     print("\t...{0} of {1} files exist".format(tallyExist, tallyMask))
     return tallyExist == tallyMask
 
+
+def saveNiftiFiles1D(i, outDir):      # WJA took this out of createVoxels1D for pool
+    xyz = vTable[i]
+    
+    # get series data for this voxel
+    vSlice = imgSeries[ xyz[0], xyz[1], xyz[2] ]
+    
+    # get pre-prepared output name for this voxel
+    # WJA this probably works
+    nDigits = len( str( len(vTable) )) 
+    out = outDir + vNames[i][nDigits-2:nDigits] + os.sep + vNames[i] + fileExt
+    
+    # save voxel slice to file
+    #print("\t...Saving voxel {0}".format(out))
+    nib.save(nib.Nifti1Image(vSlice, nii.affine, dtype=np.float32), out)
+
+
 def createVoxels1D(outDir):
     
     nVox = len(vTable)
     print("\nCreating {0} voxelwise 1D images:".format(nVox))
     loadSeriesImage(imagePrefix)
-    
-    for i in range(nVox):
-        
-        if not vMask[i]:
-            continue
-        
-        xyz = vTable[i]
-        
-        # get series data for this voxel
-        vSlice = imgSeries[ xyz[0], xyz[1], xyz[2] ]
-        
-        # get pre-prepared output name for this voxel
-        out = outDir + vNames[i] + fileExt
-        
-        # save voxel slice to file
-        print("\t...Saving voxel {0}".format(out))
-        nib.save(nib.Nifti1Image(vSlice, nii.affine, dtype=np.float32), out)
+
+    with Pool(processes=8) as pool:    # WJA multiprocessing 
+        pool.starmap(saveNiftiFiles1D, [ (i, outDir) for i in range(nVox) ] )
+    print("\t...Finished saving all voxels")
     
     if referenceFSL:
         nSeries = len( idSeries )
@@ -672,51 +682,59 @@ def createVoxels1D(outDir):
             print("{0} {1}".format(imgVoxel.min(), imgVoxel.max()) )
             os.system('fslstats {0}_x -d {0}'.format(out))
 
+
+def saveNiftiFilesCC(i, nVox, outDir):      # WJA took this out of createVoxelsCC for pool
+    xyz = vTable[i]
+    
+    # get series data for this voxel
+    vSlice = imgSeries[ xyz[0], xyz[1], xyz[2] ]
+    
+    # get pre-prepared output name for this voxel
+    #out = outDir + vNames[i] + fileExt
+    nDigits = len( str( len(vTable) )) 
+    out = outDir + vNames[i][nDigits-2:nDigits] + os.sep + vNames[i] + fileExt
+    
+    if (os.path.exists(out)):
+        if verbose:
+            print("\t...Skipping existing correlation {0}".format(out))
+    
+    # create correlation image
+    if verbose:
+        print("\t...Finding correlation values for {0}".format(vNames[i]))
+    imgCorr = np.zeros(nii.shape)
+
+    for j in range(nVox):
+        fj = vTable[j]
+        
+        # get series data for this voxel
+        v2 = imgSeries[ fj[0], fj[1], fj[2] ]
+        
+        # calling pearsonr when std==0 shows a warning message
+        if (np.std(v2) == 0):
+            # this shouldn't happen anymore since looping on voxel table
+            # but it is happening somehow ?!
+            print("\t...Unexpected STD=0", j, fj, vNames[j])
+            # leave imgeCorr at its default value of zero
+        else:
+            result = scipy.stats.pearsonr(vSlice, v2)
+            valCC = np.abs( result.statistic )
+            imgCorr[ fj[0], fj[1], fj[2] ] = valCC
+    
+    #print("\t...Saving image {0}".format(out))
+    nib.save(nib.Nifti1Image(imgCorr, nii.affine, dtype=np.float32), out)
+
+
+# WJA put this in a multiprocessing pool
 def createVoxelsCC(outDir):
     nVox = len(vTable)
     print("\nCreating {0} voxelwise correlation images:".format(nVox))
     loadSeriesImage(imagePrefix)
-    for i in range(nVox):
-        
-        if not vMask[i]:
-            continue
-        
-        xyz = vTable[i]
-        
-        # get series data for this voxel
-        vSlice = imgSeries[ xyz[0], xyz[1], xyz[2] ]
-        
-        # get pre-prepared output name for this voxel
-        out = outDir + vNames[i] + fileExt
-        
-        if (os.path.exists(out)):
-            if verbose:
-                print("\t...Skipping existing correlation {0}".format(out))
-            continue
-        
-        # create correlation image
-        if verbose:
-            print("\t...Finding correlation values for {0}".format(vNames[i]))
-        imgCorr = np.zeros(nii.shape)
-        for j in range(nVox):
-            fj = vTable[j]
-            
-            # get series data for this voxel
-            v2 = imgSeries[ fj[0], fj[1], fj[2] ]
-            
-            # calling pearsonr when std==0 shows a warning message
-            if (np.std(v2) == 0):
-                # this shouldn't happen anymore since looping on voxel table
-                # but it is happening somehow ?!
-                print("\t...Unexpected STD=0", j, fj, vNames[j])
-                # leave imgeCorr at its default value of zero
-            else:
-                result = scipy.stats.pearsonr(vSlice, v2)
-                valCC = np.abs( result.statistic )
-                imgCorr[ fj[0], fj[1], fj[2] ] = valCC
-        
-        print("\t...Saving image {0}".format(out))
-        nib.save(nib.Nifti1Image(imgCorr, nii.affine, dtype=np.float32), out)
+
+    with Pool(processes=8) as pool:    # WJA multiprocessing 
+        pool.starmap(saveNiftiFilesCC, [ (i, nVox, outDir) for i in range(nVox) ] )
+    print("\t...Finished saving all voxels")
+
+
 
 # checks vTable versus input image, prints IDs for matching voxels
 def createInputForMACM(image, prefixName):
@@ -789,7 +807,8 @@ def createInputForMACM(image, prefixName):
     firstFociFile = True
     for bmap in bmapIDs:
         # TODO: check MA Reference relative path to foci text files
-        fName = 'vbp_wdb_mni/foci-txt' + os.path.sep + bmap + '.txt'
+        # WJA CHANGE   this should be the dir with ref coords
+        fName = 'ref_coords' + os.path.sep + bmap + '.txt'
         if not os.path.exists(fName):
             print('\t...Unable to read', fName)
             continue
