@@ -40,8 +40,10 @@ MASK_FILE="${coord_space}${mask_size}"
 
 if [[ "${coord_space}" == "Tal_wb" ]];
 then
+    COORD_SPACE="tal"
 	COORD_SPACE_FOR_SPHERES="-tal"
 else
+    COORD_SPACE="mni"
 	COORD_SPACE_FOR_SPHERES=""
 fi
 
