@@ -1,0 +1,119 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.lonestar6.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
+  "helpURI": "http://dx.doi.org/10.1037/0033-2909.86.3.638",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "The 'Failsafe N' is the number of additional null studies that can be added before the results of the meta-analysis become insignificant (P>0.05). This application performs pseudorandom sampling of input data to generate 'noise' data, which is added back into the input. The final output is the number of null studies required to make each cluster disappear.",
+  "modules": [
+    "load tacc-singularity"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "12:00:00",
+  "defaultQueue": "normal",
+  "inputs": [    {
+    "id": "foci_text",
+    "details": {
+      "label": "Foci Text",
+      "description": "The text file of foci data to use",
+      "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
+      "required": true
+    },
+    "semantics": {}
+  }],
+  "parameters": [
+    {
+      "id": "p",
+      "value": {
+        "default": "0.01",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "P Value (-p)",
+        "description": "Uncorrected P value threshold"
+      }
+    },
+    {
+      "id": "fwe",
+      "value": {
+        "default": "0.05",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Family-wise Error (-fwe)",
+        "description": "Permutation-based: requires -perm parameter"
+      }
+    },
+    {
+      "id": "perm",
+      "value": {
+        "default": "5000",
+        "type": "string",
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Permutations (-perm)",
+        "description": "Number of permutations"
+      }
+    },
+    {
+      "id": "coord_space",
+      "value": {
+        "default": "Tal_wb",
+        "type": "enumeration",
+        "enum_values": [
+            { "Tal_wb": "Talairach" },
+            { "MNI152_wb": "MNI" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Coordinate Space",
+        "description": "Specify the format of the input foci data"
+      }
+    },
+    {
+      "id": "mask_size",
+      "value": {
+        "default": ".nii.gz",
+        "type": "enumeration",
+        "enum_values": [
+            { ".nii.gz": "More Conservative (Smaller)" },
+            { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Mask Size",
+        "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
