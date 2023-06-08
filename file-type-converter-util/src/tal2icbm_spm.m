@@ -1,4 +1,4 @@
-function outpoints = tal2icbm_spm(inpoints)
+function outpoints = tal2icbm_spm(infile, outfile)
 %
 % This function converts coordinates from Talairach space to MNI
 % space (normalized using the SPM software package) using the 
@@ -12,6 +12,8 @@ function outpoints = tal2icbm_spm(inpoints)
 % (N being the number of points)
 %
 % ric.uthscsa.edu 3/14/07
+
+inpoints = readTSV(infile);
 
 % find which dimensions are of size 3
 dimdim = find(size(inpoints) == 3);
@@ -49,4 +51,7 @@ inpoints = icbm_spm * inpoints;
 outpoints = inpoints(1:3, :);
 if dimdim == 2
   outpoints = outpoints';
+
+writeTSV(outfile, outpoints);
+exit
 end

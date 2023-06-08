@@ -1,4 +1,4 @@
-function outpoints = tal2icbm_other(inpoints)
+function outpoints = tal2icbm_other(infile, outfile)
 %
 % This function converts coordinates from Talairach space to MNI 
 % space (normalized using templates other than those contained
@@ -13,6 +13,8 @@ function outpoints = tal2icbm_other(inpoints)
 % (N being the number of points)
 %
 % ric.uthscsa.edu 3/14/07
+
+inpoints = readTSV(infile);
 
 % find which dimensions are of size 3
 dimdim = find(size(inpoints) == 3);
@@ -50,4 +52,7 @@ inpoints = icbm_other * inpoints;
 outpoints = inpoints(1:3, :);
 if dimdim == 2
   outpoints = outpoints';
+
+writeTSV(outfile, outpoints);
+exit
 end
