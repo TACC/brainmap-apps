@@ -75,7 +75,7 @@ singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 BINDPATH=" --bind /opt/intel:/opt/intel "
 CMD1=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
 OPT1=" -nodesktop -nodisplay -nosplash "
-MATLAB_FUNC=" make_per_experiment_TXTfiles_for_meta_ICA ${INPUT} ${PWD} 0 "
+MATLAB_FUNC=" make_per_experiment_TXTfiles_for_meta_ICA ${INPUT} ${PWD} ${filtering} "
 echo "================================================================"
 echo -n "Starting step 1: Filtering and parsing input, "
 date
@@ -83,17 +83,19 @@ echo "COMMAND1 = singularity exec ${BINDPATH} ${SING_IMG} ${CMD1} ${OPT1} -r ' $
 echo "================================================================"
 singularity exec ${SING_IMG} cp -r /app/make_per_experiment_TXTfiles_for_meta_ICA.m .
 singularity exec ${BINDPATH} ${SING_IMG} ${CMD1} ${OPT1} -r " ${MATLAB_FUNC} "
-
+mv per-experiment*/* ${TEMPDIR1}
+rmdir per-experiment*
+rm expFiltered*txt
 
 # Step 1: Filter and parse input
-dos2unix ${foci_text}
-awk -v RS= '{print > ("tempdir1/data_" NR ".txt")}' ${INPUT}
+#dos2unix ${foci_text}
+#awk -v RS= '{print > ("tempdir1/data_" NR ".txt")}' ${INPUT}
 
 
 # Step 2: Get Activation Maps
 # will generate one nifti image per file
 CMD2="java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap "
-OPT2="-expanded -gzip ${_FORMAT} -mask=masks/$MASK "
+OPT2="-expanded -gzip ${FORMAT} -mask=masks/$MASK "
 echo "================================================================"
 echo -n "Starting step 2: Getting activation maps with GingerALE, "
 date
@@ -155,7 +157,7 @@ N=40 # N simultaneous processes
 for FILE in ${TEMPDIR2}/*.nii.gz
 do
     ((i=i%$N)); ((i++==0)) && wait
-	FILE_BN=$( basename $FILE ) \
+    FILE_BN=$( basename $FILE ) \
     && singularity --quiet exec ${SING_IMG} ${CMD32} $FILE ${OPT32a} ${TEMPDIR3}/$FILE_BN ${OPT32b} &
 done
 sleep 30

@@ -80,6 +80,24 @@
       }
     },
     {
+      "id": "filtering",
+      "value": {
+        "default": "0",
+        "type": "enumeration",
+        "enum_values": [
+            { "0": "No Filtering" },
+            { "1": "Experiment-level filtering" },
+            { "2": "Paper-level filtering"}
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Filtering",
+        "description": "Specify the type of filtering to apply to the input data before Meta ICA"
+      }
+    },
+    {
       "id": "CONTAINER_IMAGE",
       "value": {
         "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",

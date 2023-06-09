@@ -29,6 +29,7 @@ function [outdir, std_space_in] = make_per_experiment_TXTfiles_for_meta_ICA(sleu
 %%%%%%%%%% Talairach or MNI reference space %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+filter_0none_1exp_2pap = str2num(filter_0none_1exp_2pap);
 if nargin < 3, filter_0none_1exp_2pap = 0; end
 
 cd(folder_path)
@@ -613,7 +614,7 @@ if filter_0none_1exp_2pap == 0
     fprintf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
 end
 std_space_in = reference_space;
-if ~exist(strcat(folder_path,'/MA_Z'), 'dir'),  mkdir(strcat(folder_path,'/MA_Z'));  end
+%if ~exist(strcat(folder_path,'/MA_Z'), 'dir'),  mkdir(strcat(folder_path,'/MA_Z'));  end
 if ~strcmp(std_space_in,'MNI'), std_space_in='TAL'; end
 % runALE_on_perExpTxtFile_dir(outdir,folder_path,std_space_in)
 cd(folder_path)
