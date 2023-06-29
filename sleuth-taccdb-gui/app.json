@@ -111,7 +111,7 @@
           "type": "string",
           "order": 2,
           "enquote": false,
-          "default": "java -jar /app/Sleuth.jar",
+          "default": "java -cp /app/Sleuth.jar org.brainmap.Sleuth",
           "validator": null
       },
       "details": {
