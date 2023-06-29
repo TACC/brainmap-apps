@@ -129,7 +129,6 @@ for FILE in ${TEMPDIR2}/*.nii.gz
 do
     ((i=i%$N)); ((i++==0)) && wait
     THIS_VAL=` singularity --quiet exec ${SING_IMG} ${CMD31} $FILE ${OPT31} ` \
-    && echo "THIS_VAL = ${THIS_VAL}" \
     && echo ${THIS_VAL} >> list_of_vals.txt &
 done
 sleep 30
