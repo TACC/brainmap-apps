@@ -1,0 +1,69 @@
+{
+  "checkpointable": false,
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.lonestar6.wallen",
+  "executionType": "HPC",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
+  "helpURI": "https://www.brainmap.org/",
+  "label": "{{ app.label }}",
+  "shortDescription": "{{ app.description }}",
+  "longDescription": "This utility takes a Sleuth export text file as input, and identifies coordinates that are reported redundantly within a paper. It exports individual experiment text files with no filtering, experiment-level filtering, or paper-level filtering applied.",
+  "modules": [
+    "load tacc-singularity",
+    "load matlab/2022b"
+  ],
+  "ontology": [],
+  "parallelism": "SERIAL",
+  "tags": [],
+  "templatePath": "runner.sh",
+  "testPath": "tester.sh",
+  "version": "{{ app.version }}",
+  "defaultMaxRunTime": "00:30:00",
+  "defaultQueue": "development",
+  "inputs": [    {
+    "id": "foci_text",
+    "details": {
+      "label": "Foci Text",
+      "description": "The text file of foci data to use in MNI or Tal format"
+    },
+    "value": {
+      "default": "",
+      "required": true,
+      "visible": true,
+      "order": 1
+    },
+    "semantics": {}
+  }],
+  "parameters": [
+    {
+      "id": "filtering",
+      "value": {
+        "default": "0",
+        "type": "enumeration",
+        "enum_values": [
+            { "0": "No Filtering" },
+            { "1": "Experiment-level filtering" },
+            { "2": "Paper-level filtering"}
+        ],
+        "visible": true,
+        "required": true
+      },
+      "details": {
+        "label": "Filtering",
+        "description": "Specify the type of filtering to apply to the input data"
+      }
+    },
+    {
+      "id": "CONTAINER_IMAGE",
+      "value": {
+        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 1000
+      }
+    }
+  ],
+  "outputs": []
+}
