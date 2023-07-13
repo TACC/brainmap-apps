@@ -8,7 +8,7 @@
   "helpURI": "https://brainmap.org/sleuth/",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
-  "longDescription": "NOTE: This version of the Sleuth GUI uses the new Jar file that points to the TACC database. Sleuth is the BrainMap application that is used to search for papers of interest, read their corresponding meta-data, and plot their results as coordinates on a standard glass brain in Talairach space. NOTE: After submitting the job, navigate to the History > Jobs tab, and when the job begins Running you will find an 'Open Session' button with connection information.",
+  "longDescription": "Sleuth is the BrainMap application that is used to search for papers of interest, read their corresponding meta-data, and plot their results as coordinates on a standard glass brain in Talairach space. NOTE: After submitting the job, navigate to the History > Jobs tab, and when the job begins Running you will find an 'Open Session' button with connection information.",
   "modules": [
     "load tacc-singularity"
   ],
