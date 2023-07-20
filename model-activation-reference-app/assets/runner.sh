@@ -26,16 +26,21 @@ mkdir ${OUTPUT}
 if [ -n "${input_tsv}" ];
 then
     INPUT="${input_tsv}"
+    INPUT_PREFIX=$(echo ${input_tsv} | cut -d_ -f1)
 else
     INPUT="vbm_export_voxels.txt"
+    INPUT_PREFIX="vbm"
 fi
 
 # coord space can be -tal or -mni
 if [ -n "${coord_space}" ];
 then
     FORMAT="${coord_space}"
+    FORMAT_NODASH="${FORMAT:1}"
 else
     FORMAT="-tal"
+    FORMAT_NODASH="tal"
+
 fi
 
 # mask can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
@@ -216,20 +221,26 @@ date
 echo "================================================================"
 if [ "${output_format}" == "macm" ];
 then
-    mv ${TEMPDIR1} exps_for_macm
-    find exps_for_macm | sort > exps_for_macm_manifest.txt
-    tar -czf exps_for_macm.tar.gz exps_for_macm/         # MACM needs this
-    rm -rf exps_for_macm/
-    mv exps_for_macm_manifest.txt ${JOB_DIR}
-    mv exps_for_macm.tar.gz ${JOB_DIR}
+    COORDS_NAME="ref_coords_${INPUT_PREFIX}_${FORMAT_NODASH}"
+    mv ${TEMPDIR1} ${COORDS_NAME}
+    find ${COORDS_NAME} | sort > ${COORDS_NAME}_manifest.txt
+    tar -czf ${COORDS_NAME}.tar.gz ${COORDS_NAME}/         # MACM needs this
+    rm -rf ${COORDS_NAME}/
+    mv ${COORDS_NAME}_manifest.txt ${JOB_DIR}
+    mv ${COORDS_NAME}.tar.gz ${JOB_DIR}
 elif [ "${output_format}" == "cbp" ];
 then
     rm -rf ${TEMPDIR1}
 fi
-tar -czf output.tar.gz ${OUTPUT}
-find ${OUTPUT} | sort > output_manifest.txt
-mv output_manifest.txt ${JOB_DIR}
-mv output.tar.gz ${JOB_DIR}
+
+IMAGES_NAME="ref_images_${INPUT_PREFIX}_${FORMAT_NODASH}"
+mv ${OUTPUT} ${IMAGES_NAME}
+find ${IMAGES_NAME} | sort > ${IMAGES_NAME}_manifest.txt
+tar -czf ${IMAGES_NAME}.tar.gz ${IMAGES_NAME}/
+rm -rf ${IMAGES_NAME}/
+mv ${IMAGES_NAME}_manifest.txt ${JOB_DIR}
+mv ${IMAGES_NAME}.tar.gz ${JOB_DIR}
+
 rm -rf ${TEMPDIR2} ${TEMPDIR3} ${OUTPUT}
 rm ${SING_IMG}
 
