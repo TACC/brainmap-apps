@@ -12,14 +12,14 @@ SING_IMG="${SING_IMG}.sif"
 module unload xalt
 
 # set up temp dirs
-#TEMPDIR1="/tmp/tempdir1"
-#TEMPDIR2="/tmp/tempdir2"
-#TEMPDIR3="/tmp/tempdir3"
-#OUTPUT="/tmp/output"
-TEMPDIR1="tempdir1"
-TEMPDIR2="tempdir2"
-TEMPDIR3="tempdir3"
-OUTPUT="output"
+TEMPDIR1="/tmp/tempdir1"
+TEMPDIR2="/tmp/tempdir2"
+TEMPDIR3="/tmp/tempdir3"
+OUTPUT="/tmp/output"
+#TEMPDIR1="tempdir1"
+#TEMPDIR2="tempdir2"
+#TEMPDIR3="tempdir3"
+#OUTPUT="output"
 mkdir ${TEMPDIR1}
 mkdir ${TEMPDIR2}
 mkdir ${TEMPDIR3}
@@ -57,10 +57,10 @@ else
 fi
 
 # do this on /tmp
-#JOB_DIR=`pwd`
-#cp masks/${MASK} /tmp
-#cp ${INPUT} /tmp
-#cd /tmp
+JOB_DIR=`pwd`
+cp masks/${MASK} /tmp
+cp ${INPUT} /tmp
+cd /tmp
 
 # Log commands, timing, run job
 echo "================================================================"
@@ -95,7 +95,7 @@ rm expFiltered*txt
 # Step 2: Get Activation Maps
 # will generate one nifti image per file
 CMD2="java -cp /app/GingerALE.jar org.brainmap.meta.getActivationMap "
-OPT2="-expanded -gzip ${FORMAT} -mask=masks/$MASK "
+OPT2="-expanded -gzip ${FORMAT} -mask=$MASK "
 echo "================================================================"
 echo -n "Starting step 2: Getting activation maps with GingerALE, "
 date
@@ -181,7 +181,7 @@ singularity --quiet exec ${SING_IMG} ${CMD4} ${OPT4}
 
 # Step 5: Do ICA with Melodic
 CMD5="melodic"
-OPT5="-i ${OUTPUT}/mod_4d.nii.gz -d ${DIM_RED} -m masks/${MASK} --vn --Oall --report"
+OPT5="-i ${OUTPUT}/mod_4d.nii.gz -d ${DIM_RED} -m ${MASK} --vn --Oall --report"
 echo "================================================================"
 echo -n "Starting step 5: ICA with Melodic, "
 date
