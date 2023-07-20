@@ -19,7 +19,7 @@
   "templatePath": "runner.sh",
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
-  "defaultMaxRunTime": "00:10:00",
+  "defaultMaxRunTime": "00:30:00",
   "defaultQueue": "development",
   "inputs": [    {
     "id": "input_file",

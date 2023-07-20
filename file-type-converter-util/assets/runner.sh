@@ -39,7 +39,7 @@ echo "================================================================"
 
 singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
-mv ${output_filename} temp_temp_temp.txt
+mv ${output_filename} tmp_file_no_headers
 
 # chop output back together with input
 while IFS= read -r line; do
@@ -50,16 +50,16 @@ while IFS= read -r line; do
     elif [[ $line == "/"* ]] || [[ -z $line ]]; then
         echo "$line" >> "${output_filename}"
     elif [[ $line == [0-9]* ]] || [[ $line == "-"* ]]; then
-        other_line=$(head -n 1 "temp_temp_temp.txt")
+        other_line=$(head -n 1 "tmp_file_no_headers")
         echo "$other_line" >> "${output_filename}"
-        sed -i '1d' "temp_temp_temp.txt"  # Remove the first line from the second file
+        tail -n +2 tmp_file_no_headers > tmp_tmp_tmp && mv tmp_tmp_tmp tmp_file_no_headers  # use tail to remove first line from second file - a bit faster than sed
     fi
 done < ${input_file}
 
 
 rm ${SING_IMG}
 rm ${transform}.m readTSV.m writeTSV.m
-rm temp_temp_temp.txt
+rm tmp_file_no_headers
 mv ${input_file} COPY_OF_${input_file}
 # rm ${input_file}
 
