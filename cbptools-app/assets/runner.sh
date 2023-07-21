@@ -1,10 +1,8 @@
 # Allow over-ride
 if [ -z "${CONTAINER_IMAGE}" ]
 then
-    version=$(cat ./_util/VERSION)
-    CONTAINER_IMAGE="index.docker.io/library/ubuntu:bionic"
+    CONTAINER_IMAGE="wjallen/cbptools:1.1.6"
 fi
-. lib/container_exec.sh
 
 
 #COMMAND="melodic"

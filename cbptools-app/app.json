@@ -1,10 +1,10 @@
 {
   "checkpointable": false,
-  "name": "{{ agave.username }}-{{ app.name }}",
-  "executionSystem": "{{ app.executionSystem }}",
+  "name": "wallen-{{ app.name }}",
+  "executionSystem": "tacc.lonestar6.wallen",
   "executionType": "HPC",
-  "deploymentPath": "apps/{{ agave.username }}-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "{{  app.deploymentSystem }}",
+  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "cloud.corral.work.wallen",
   "helpURI": "https://cbptools.readthedocs.io/en/latest/",
   "label": "{{ app.label }}",
   "shortDescription": "{{ app.description }}",
@@ -19,6 +19,7 @@
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
   "defaultMaxRunTime": "12:00:00",
+  "defaultQueue": "normal",
   "inputs": [],
   "parameters": [
     {
@@ -27,11 +28,12 @@
         "default": "/scratch/05369/urrutia/brainmap/cbptools/test_data/cbptools-example-data/config_r_presma-sma_rsfmri3.yaml",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 1
       },
       "details": {
-        "label": "Input configuration file for cbptools create",
-        "required": true
+        "label": "Input",
+        "description": "Input configuration file for cbptools create"
       }
     },
     {
@@ -40,11 +42,12 @@
         "default": "/scratch/05369/urrutia/brainmap/cbptools/app_test/r_presma-sma_rsfmr",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 2
       },
       "details": {
-        "label": "output directory",
-        "description": "name of the output directory for cbptools"
+        "label": "Output Directory",
+        "description": "Name of the output directory for cbptools"
       }
     },
     {
@@ -53,10 +56,11 @@
         "default": 20,
         "type": "number",
         "visible": true,
-        "required": false
+        "required": false,
+        "order": 3
       },
       "details": {
-        "label": "cores",
+        "label": "Cores",
         "description": "Number of cores for Snakemake multi-threading"
       }
     },
