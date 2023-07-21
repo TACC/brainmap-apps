@@ -27,38 +27,10 @@
       "description": "Tab separated file containing list of seed coordinates (annotated)"
     },
     "value": {
-      "default": "agave://brainmap.project.BRAINMAP-14/input_peaks_with_names.tsv",
+      "default": "",
       "required": true,
       "visible": true,
       "order": 1
-    },
-    "semantics": {}
-  },
-  {
-    "id": "ref_coords",
-    "details": {
-      "label": "Input Studies",
-      "description": "The tar.gz output from Model Activation Reference containing individual study foci data"
-      },
-    "value": {
-      "default": "agave://brainmap.project.BRAINMAP-14/ref_coords_vbm_tal.tar.gz",
-      "required": true,
-      "visible": false,
-      "order": 2
-    },
-    "semantics": {}
-  },
-  {
-    "id": "ref_images",
-    "details": {
-      "label": "Input Images",
-      "description": "The tar.gz output from Model Activation Reference containing voxelwise images"
-    },
-    "value": {
-      "default": "agave://brainmap.project.BRAINMAP-14/ref_images_vbm_tal.tar.gz",
-      "required": true,
-      "visible": false,
-      "order": 3
     },
     "semantics": {}
   }],
@@ -71,10 +43,11 @@
         "enum_values": [
             { "vbm": "VBM" },
             { "vbp": "VBP" },
-            { "ta": "TA"}
+            { "func": "TA"}
         ],
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 1
       },
       "details": {
         "label": "Sector",
@@ -84,10 +57,11 @@
     {
       "id": "radius",
       "value": {
-        "default": "2",
+        "default": "4",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 2
       },
       "details": {
         "label": "Radius (in mm)",
@@ -104,7 +78,8 @@
             { "MNI152_wb": "MNI" }
         ],
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 3
       },
       "details": {
         "label": "Coordinate Space",
@@ -121,11 +96,26 @@
             { ".nii.gz": "More Conservative (Smaller)" }
         ],
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 4
       },
       "details": {
         "label": "Mask Size",
         "description": "Specify less conservative (dilated by 2mm) or more conservative (smaller) masks"
+      }
+    },
+    {
+      "id": "ref_path",
+      "value": {
+        "default": "/work/08531/brainmap/tapis/data/macm",
+        "type": "string",
+        "visible": false,
+        "required": true,
+        "order": 5
+      },
+      "details": {
+        "label": "Reference Data Path",
+        "description": "Filesystem path to reference coords and images"
       }
     },
     {

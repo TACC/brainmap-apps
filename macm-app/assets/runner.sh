@@ -13,17 +13,13 @@ module unload xalt
 # Step 0: Gather input
 INPUT_ROIS=${seed_rois}
 INPUT_ROIS_BN="$(echo ${seed_rois} | cut -d '.' -f1 )"
-REF_COORDS=${ref_coords}    # these are hidden in portal interface
-REF_COORDS_BN="$(echo ${ref_coords} | cut -d '.' -f1 )"
-REF_IMAGES=${ref_images}    # these are hidden in portal interface
-REF_IMAGES_BN="$(echo ${ref_images} | cut -d '.' -f1 )"
 
 # sector - can be vbm, vbp, or ta
 if [ -n "${sector}" ];
 then
-    SECTOR="${sector}"
+    DB_SECTOR="${sector}"
 else
-    SECTOR="vbm"
+    DB_SECTOR="vbm"
 fi
 
 # radius - 6mm for fmacm, 4mm for smacm - or 2mm for all?
@@ -40,12 +36,23 @@ MASK_FILE="${coord_space}${mask_size}"
 
 if [[ "${coord_space}" == "Tal_wb" ]];
 then
-    COORD_SPACE="tal"
-	COORD_SPACE_FOR_SPHERES="-tal"
+    COORD_FORMAT="tal"
+	COORD_FORMAT_FOR_SPHERES="-tal"
 else
-    COORD_SPACE="mni"
-	COORD_SPACE_FOR_SPHERES=""
+    COORD_FORMAT="mni"
+	COORD_FORMAT_FOR_SPHERES=""
 fi
+
+
+REF_COORDS_BN=ref_coords_${DB_SECTOR}_${COORD_FORMAT}    # these are hidden in portal interface
+REF_COORDS=${ref_path}/${REF_COORDS_BN}.tar.gz
+REF_IMAGES_BN=ref_images_${DB_SECTOR}_${COORD_FORMAT}    # these are hidden in portal interface
+REF_IMAGES=${ref_path}/${REF_IMAGES_BN}.tar.gz
+
+#REF_COORDS=${ref_coords}    # these are hidden in portal interface
+#REF_COORDS_BN="$(echo ${ref_coords} | cut -d '.' -f1 )"
+#REF_IMAGES=${ref_images}    # these are hidden in portal interface
+#REF_IMAGES_BN="$(echo ${ref_images} | cut -d '.' -f1 )"
 
 
 # Unpack inputs
@@ -86,7 +93,7 @@ singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 # Step 1: Create images for each ROI
 singularity exec ${SING_IMG} cp /MACM/spheres.py . # spheres.py wants to be in local dir
 CMD1=" python3 spheres.py "
-OPT1=" ${COORD_SPACE_FOR_SPHERES} -r=${RADIUS} ${INPUT_ROIS} "
+OPT1=" ${COORD_FORMAT_FOR_SPHERES} -r=${RADIUS} ${INPUT_ROIS} "
 echo "================================================================"
 echo -n "Starting step 1: Generating images from ROIs, "
 date
@@ -181,8 +188,8 @@ date
 rm ref_images
 rm ref_coords
 
-rm ${REF_COORDS}
-rm ${REF_IMAGES}
+#rm ${REF_COORDS}
+#rm ${REF_IMAGES}
 
 rm -rf /tmp/${REF_COORDS_BN}
 rm -rf /tmp/${REF_IMAGES_BN}
