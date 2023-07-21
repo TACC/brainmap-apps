@@ -24,9 +24,13 @@
     "id": "foci_text",
     "details": {
       "label": "Foci Text",
-      "description": "The text file of foci data to use",
-      "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
-      "required": true
+      "description": "A text file of foci data in MNI or Talairach format"
+    },
+    "value": {
+      "default": "",
+      "required": true,
+      "visible": true,
+      "order": 1
     },
     "semantics": {}
   }],
@@ -37,7 +41,8 @@
         "default": "0.01",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 1
       },
       "details": {
         "label": "P Value (-p)",
@@ -50,7 +55,8 @@
         "default": "0.05",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 2
       },
       "details": {
         "label": "Family-wise Error (-fwe)",
@@ -63,7 +69,8 @@
         "default": "5000",
         "type": "string",
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 3
       },
       "details": {
         "label": "Permutations (-perm)",
@@ -80,7 +87,8 @@
             { "MNI152_wb": "MNI" }
         ],
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 4
       },
       "details": {
         "label": "Coordinate Space",
@@ -97,7 +105,8 @@
             { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
         ],
         "visible": true,
-        "required": true
+        "required": true,
+        "order": 5
       },
       "details": {
         "label": "Mask Size",

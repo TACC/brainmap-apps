@@ -25,9 +25,13 @@
     "id": "foci_text",
     "details": {
       "label": "Foci Text",
-      "description": "The text file of foci data to use as input (must be in specific format, see link at left)",
-      "default": "agave://utrc-home.wallen/wallen/apps/gingerale-3.0.2/test/test_gingerale_talairach.txt",
-      "required": true
+      "description": "The annotated text file of foci data to use as input (must be in specific format, see link at left)"
+    },
+    "value": {
+      "default": "",
+      "required": true,
+      "visible": true,
+      "order": 1
     },
     "semantics": {}
   }],
