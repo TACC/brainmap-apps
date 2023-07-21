@@ -191,6 +191,7 @@ singularity --quiet exec ${SING_IMG} ${CMD5} ${OPT5}
 
 
 # Clean up
+mv ${OUTPUT} ${JOB_DIR}
 rm -rf ${TEMPDIR1} ${TEMPDIR2} ${TEMPDIR3}
 rm ${SING_IMG}
 rm make_per_experiment_TXTfiles_for_meta_ICA.m
