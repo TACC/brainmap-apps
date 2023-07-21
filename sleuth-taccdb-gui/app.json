@@ -19,7 +19,18 @@
   "testPath": "tester.sh",
   "version": "{{ app.version }}",
   "defaultMaxRunTime": "02:00:00",
-  "inputs": [],
+  "inputs": [
+    {
+        "id": "sleuth_workspace",
+        "details": {
+          "label": "Sleuth Workspace",
+          "description": "(Optional) The Sleuth workspace file to stage for opening",
+          "default": "",
+          "required": true
+        },
+        "semantics": {}
+    }
+  ],
   "parameters": [
     {
       "id": "CONTAINER_IMAGE",

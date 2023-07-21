@@ -191,6 +191,10 @@ then
 fi
 # silence xalt errors
 module unload xalt
+if [ -n ${sleuth_workspace} ];
+then
+    cp ${sleuth_workspace} ${STOCKYARD}
+fi
 
 # run an xterm and launch $XTERM_CMD for the user; execution will hold here
 mkdir -p $HOME/.tap
@@ -207,6 +211,11 @@ while [ -f ${TAP_LOCKFILE} ]; do
 done
 
 # job is done!
+if [ -n ${sleuth_workspace} ];
+then
+    rm ${STOCKYARD}/${sleuth_workspace}
+    rm ${sleuth_workspace}
+fi
 
 echo "TACC: closing ${SERVER_TYPE} session"
 if [ "x${SERVER_TYPE}" == "xDCV" ]; then
