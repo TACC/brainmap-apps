@@ -62,6 +62,10 @@ singularity --quiet pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 
 # Step 1: Split input
+if [[ "${normalize}" == "true" ]];
+then
+    sed -i 's/.*Subjects=.*/\/\/ Subjects=4/' ${INPUT}
+fi
 dos2unix ${INPUT}
 awk -v RS= '{print > ("tempdir1/data_" NR ".txt")}' ${INPUT}
 
