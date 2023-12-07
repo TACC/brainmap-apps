@@ -1,0 +1,21 @@
+{
+    "name": "brainmap-default",
+    "description": "Default Scheduler Profile for BrainMap Apps",
+    "moduleLoads": [
+        {
+            "modulesToLoad": [
+                "tacc-apptainer"
+            ],
+            "moduleLoadCommand": "module load"
+        },
+        {
+            "modulesToLoad": [
+                "xalt"
+            ],
+            "moduleLoadCommand": "module unload"
+        }
+    ],
+    "hiddenOptions": [
+        "MEM"
+    ]
+}
