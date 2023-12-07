@@ -3,3 +3,6 @@
 graph-theory-app/src/
 */test/
 .DS_Store
+__pycache__/
+src/
+SECRETS.py

@@ -1,85 +1,130 @@
 {
-  "checkpointable": false,
-  "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.lonestar6.wallen",
-  "executionType": "HPC",
-  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "cloud.corral.work.wallen",
-  "helpURI": "http://brainmap.org/ale/cli.html",
-  "label": "{{ app.label }}",
-  "shortDescription": "{{ app.description }}",
-  "longDescription": "GingerALE creates activation likelihood estimates (ALE) for neuroimaging meta-analyses. This app creates only the ALE images, without calculating P values or Z scores used in thresholding.",
-  "modules": [
-    "load tacc-singularity"
-  ],
-  "ontology": [],
-  "parallelism": "SERIAL",
-  "tags": [],
-  "templatePath": "runner.sh",
-  "testPath": "tester.sh",
-  "version": "{{ app.version }}",
-  "defaultMaxRunTime": "02:00:00",
-  "inputs": [    {
-    "id": "foci_text",
-    "details": {
-      "label": "Foci Text",
-      "description": "A text file of foci data in MNI or Talairach format"
-    },
-    "value": {
-      "default": "",
-      "required": true,
-      "visible": true,
-      "order": 1
-    },
-    "semantics": {}
-  }],
-  "parameters": [
-    {
-      "id": "coord_space",
-      "value": {
-        "default": "Tal_wb",
-        "type": "enumeration",
-        "enum_values": [
-            { "Tal_wb": "Talairach" },
-            { "MNI152_wb": "MNI" }
+    "id": "wallen-gingerale-ale",
+    "version": "3.0.2",
+    "description": "GingerALE creates activation likelihood estimates (ALE) for neuroimaging meta-analyses. This app creates only the ALE images, without calculating P values or Z scores used in thresholding.",
+    "owner": "${apiUserId}",
+    "enabled": true,
+    "runtime": "SINGULARITY",
+    "runtimeVersion": null,
+    "runtimeOptions": [
+        "SINGULARITY_RUN"
+    ],
+    "containerImage": "docker://wjallen/gingerale-ale:3.0.2",
+    "jobType": "BATCH",
+    "maxJobs": -1,
+    "maxJobsPerUser": -1,
+    "strictFileInputs": false,
+    "jobAttributes": {
+        "description": "Create ALE images for neuroimaging meta-analyses",
+        "dynamicExecSystem": false,
+        "execSystemConstraints": null,
+        "execSystemId": "tacc.lonestar6.wallen",
+        "execSystemExecDir": "${JobWorkingDir}",
+        "execSystemInputDir": "${JobWorkingDir}",
+        "execSystemOutputDir": "${JobWorkingDir}",
+        "execSystemLogicalQueue": "development",
+        "archiveSystemId": "tacc.lonestar6.wallen",
+        "archiveSystemDir": "HOST_EVAL($STOCKYARD)/tapis/archive/${JobCreateDate}/${JobName}-${JobUUID}",
+        "archiveOnAppError": true,
+        "isMpi": false,
+        "mpiCmd": null,
+        "cmdPrefix": "numactl -C 0,7",
+        "nodeCount": 1,
+        "coresPerNode": 1,
+        "memoryMB": 100,
+        "maxMinutes": 120,
+        "subscriptions": [],
+        "tags": [],
+        "fileInputs": [
+            {
+                "name": "Foci Text",
+                "description": "A text file of foci data in MNI or Talairach format",
+                "inputMode": "REQUIRED",
+                "autoMountLocal": true,
+                "sourceUrl": null,
+                "targetPath": "*"
+            }
         ],
-        "visible": true,
-        "required": true,
-        "order": 1
-      },
-      "details": {
-        "label": "Coordinate Space",
-        "description": "Specify the format of the input foci data"
-      }
+        "fileInputArrays": [],
+        "parameterSet": {
+            "appArgs": [
+                {
+                    "name": "Default run command",
+                    "description": "Default run command",
+                    "arg": "/bin/bash /app/run.sh",
+                    "notes": { 
+                        "isHidden": true
+                    }
+                },
+                {
+                    "name": "Coordinate Space",
+                    "description": "Specify the format of the input foci data",
+                    "inputMode": "REQUIRED",
+                    "arg": "Tal_wb",
+                    "notes": {
+                        "enum_values": [
+                            {
+                                "Tal_wb": "Talairach"
+                            },
+                            {
+                                "MNI152_wb": "MNI"
+                            }
+                        ]
+                    }
+
+                },
+                {
+                    "name": "Mask Size",
+                    "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks",
+                    "inputMode": "REQUIRED",
+                    "arg": ".nii.gz",
+                    "notes": {
+                        "enum_values": [
+                            {
+                                ".nii.gz": "More Conservative (Smaller)"
+                            },
+                            {
+                                "_dil.nii.gz": "Less Conservative (Dilated 2mm)"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "containerArgs": [],
+            "schedulerOptions": [
+                {
+                    "name": "brainmap-default",
+                    "description": "Default Scheduler Profile for BrainMap Apps",
+                    "inputMode": "FIXED",
+                    "arg": "--tapis-profile brainmap-default",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "envVariables": [],
+            "archiveFilter": {
+                "includes": [],
+                "excludes": [],
+                "includeLaunchFiles": true
+            }
+        }
     },
-    {
-      "id": "mask_size",
-      "value": {
-        "default": ".nii.gz",
-        "type": "enumeration",
-        "enum_values": [
-            { ".nii.gz": "More Conservative (Smaller)" },
-            { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
-        ],
-        "visible": true,
-        "required": true,
-        "order": 2
-      },
-      "details": {
-        "label": "Mask Size",
-        "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks"
-      }
-    },
-    {
-      "id": "CONTAINER_IMAGE",
-      "value": {
-        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
-        "type": "string",
-        "visible": false,
-        "required": true,
-        "order": 1000
-      }
+    "tags": [
+        "portalName: CEP",
+        "portalName: Brainmap"
+    ],
+    "notes": {
+        "label": "GingerALE - ALE, No Threshold",
+        "helpUrl": "http://brainmap.org/ale/cli.html",
+        "hideNodeCountAndCoresPerNode": true,
+        "isInteractive": false,
+        "icon": null,
+        "category": "Analysis",
+        "queueFilter": [
+            "development",
+            "normal",
+            "vm-small"
+        ]
     }
-  ],
-  "outputs": []
 }
