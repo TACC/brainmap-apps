@@ -6,3 +6,4 @@ graph-theory-app/src/
 __pycache__/
 src/
 SECRETS.py
+.python-version
