@@ -21,7 +21,7 @@ fi
 # Add -nonAdd flag
 PARAMS="${PARAMS} -nonAdd "
 
-# Grab p value
+# Get p value
 if [ -n "${p}" ];
 then
 	PARAMS="${PARAMS} -p=${p} "
@@ -30,7 +30,7 @@ else
 	PARAMS="${PARAMS} -p=0.01 "
 fi
 
-# Grab minVol
+# Get minVol
 if [ -n "${minVol}" ];
 then
 	PARAMS="${PARAMS} -minVol=${minVol} "
