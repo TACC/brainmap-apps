@@ -1,24 +1,19 @@
-APPID ?= wallen-mango-4.1
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-mango-gui
+APPVER ?= 4.1
+DOCKERID ?= wjallen/mango-gui:4.1
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/mango:4.1 .
+	docker build -t $(DOCKERID) .
 
-run:
-	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 wjallen/mango:4.1 java -jar /Mango/Mango.jar
-
-inter:
-	docker run --rm -it wjallen/mango:4.1 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/mango:4.1
+	docker push $(DOCKERID)
+
+gui:
+	xhost + 127.0.0.1
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=java $(DOCKERID) -jar /app/src/Mango/Mango.jar
