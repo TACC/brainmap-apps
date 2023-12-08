@@ -1,24 +1,19 @@
-APPID ?= wallen-sleuth-taccdb-gui-3.0.4
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-sleuth-taccdb-gui
+APPVER ?= 3.0.4
+DOCKERID ?= wjallen/sleuth-taccdb-gui:3.0.4
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/sleuth-taccdb:3.0.4 .
+	docker build -t $(DOCKERID) .
 
-run:
-	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 wjallen/sleuth-taccdb:3.0.4 java -jar /app/Sleuth.jar
-
-inter:
-	docker run --rm -it wjallen/sleuth-taccdb:3.0.4 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/sleuth-taccdb:3.0.4
+	docker push $(DOCKERID)
+
+gui:
+	xhost + 127.0.0.1
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=java $(DOCKERID) -cp /app/src/Sleuth.jar org.brainmap.Sleuth
