@@ -1,20 +1,15 @@
-APPID ?= wallen-gingerale-3.0.2
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-gingerale-pval
+APPVER ?= 3.0.2
+DOCKERID ?= wjallen/gingerale-pval:3.0.2
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/gingerale:3.0.2 .
+	docker build -t $(DOCKERID) .
 
-run:
-	docker run --rm -it -v wjallen/gingerale:3.0.2 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/gingerale:3.0.2
+	docker push $(DOCKERID)
