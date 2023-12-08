@@ -1,25 +1,19 @@
-APPID ?= wallen-gingerale-gui-3.0.2
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-gingerale-gui
+APPVER ?= 3.0.2
+DOCKERID ?= wjallen/gingerale-gui:3.0.2
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/gingerale:3.0.2 .
+	docker build -t $(DOCKERID) .
 
-run:
-	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 wjallen/gingerale:3.0.2 java -jar /app/GingerALE.jar
-
-inter:
-	docker run --rm -it wjallen/gingerale:3.0.2 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/gingerale:3.0.2
-	
+	docker push $(DOCKERID)
+
+gui:
+	xhost + 127.0.0.1
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=java $(DOCKERID) -jar /app/src/GingerALE.jar

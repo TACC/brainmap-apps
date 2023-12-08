@@ -1,0 +1,22 @@
+{
+    "name": "brainmap-gui",
+    "description": "Scheduler Profile for BrainMap GUI Apps",
+    "moduleLoads": [
+        {
+            "modulesToLoad": [
+                "swr",
+                "tacc-apptainer"
+            ],
+            "moduleLoadCommand": "module load"
+        },
+        {
+            "modulesToLoad": [
+                "xalt"
+            ],
+            "moduleLoadCommand": "module unload"
+        }
+    ],
+    "hiddenOptions": [
+        "MEM"
+    ]
+}
