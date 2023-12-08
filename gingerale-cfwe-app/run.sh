@@ -49,9 +49,9 @@ MASK_FILE="${coord_space}${mask_size}"
 # can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
 if [ -n "${MASK_FILE}" ];
 then
-        PARAMS="${PARAMS} -mask=/app/src/masks/${MASK_FILE} "
+	PARAMS="${PARAMS} -mask=/app/src/masks/${MASK_FILE} "
 else
-        PARAMS="${PARAMS} -mask=/app/src/masks/Tal_wb_dil.nii.gz "
+	PARAMS="${PARAMS} -mask=/app/src/masks/Tal_wb_dil.nii.gz "
 fi
 
 # Add -nonAdd flag
@@ -74,12 +74,12 @@ echo -n "starting: "
 date
 
 echo "================================================================"
-echo "COMMAND = singularity exec ${SING_IMG} ${COMMAND} ${PARAMS}"
+echo "COMMAND = ${COMMAND} ${PARAMS}"
 echo "================================================================"
 ${COMMAND} ${PARAMS}
 
 echo "================================================================"
-echo "COMMAND2 = singularity exec ${SING_IMG} ${COMMAND2} ${PARAMS2} "
+echo "COMMAND2 = ${COMMAND2} ${PARAMS2} "
 echo "================================================================"
 ${COMMAND2} ${PARAMS2}
 
