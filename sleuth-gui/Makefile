@@ -1,24 +1,19 @@
-APPID ?= wallen-sleuth-gui-3.0.4
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-sleuth-gui
+APPVER ?= 3.0.4
+DOCKERID ?= wjallen/sleuth-gui:3.0.4
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/sleuth:3.0.4 .
+	docker build -t $(DOCKERID) .
 
-run:
-	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 wjallen/sleuth:3.0.4 java -jar /app/Sleuth.jar
-
-inter:
-	docker run --rm -it wjallen/sleuth:3.0.4 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/sleuth:3.0.4
+	docker push $(DOCKERID)
+
+gui:
+	xhost + 127.0.0.1
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=java $(DOCKERID) -jar /app/src/Sleuth.jar
