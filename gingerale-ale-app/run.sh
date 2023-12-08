@@ -5,7 +5,7 @@ mask_size=$2
 foci_text=$(find * -type f | grep -v 'tapisjob')
 
 # ALE Testing and Significance
-COMMAND=" java -Xms16G -Xmx16G -cp /app/src/GingerALE.jar org.brainmap.meta.getALE2"
+COMMAND=" java -Xms16G -Xmx16G -cp /app/src/GingerALE.jar org.brainmap.meta.getALE2 "
 PARAMS=" "
 
 if [ -n "${foci_text}" ];
@@ -36,7 +36,7 @@ fi
 # Add a command to get peaks
 COMMAND2=" java -cp /app/src/GingerALE.jar org.brainmap.meta.getClustersStats "
 FILE_PREFIX=`basename ${foci_text} .txt`
-PARAMS2=" ${FILE_PREFIX}_ALE.nii /app/src/masks/${MASK_FILE} -mni "
+PARAMS2=" ${FILE_PREFIX}_ALE.nii /app/src/masks/${MASK_FILE} "
 
 if [ ${coord_space} == "Tal_wb" ];
 then
