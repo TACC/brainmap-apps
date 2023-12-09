@@ -1,188 +1,113 @@
-{
-    "name": "matlab-ls6",
-    "icon": null,
-    "parallelism": "PARALLEL",
-    "defaultProcessorsPerNode": 32,
-    "defaultMemoryPerNode": 192,
-    "defaultNodeCount": 1,
-    "defaultMaxRunTime": "48:00:00",
-    "defaultQueue": "normal",
-    "version": "9.13",
-    "isPublic": false,
-    "helpURI": "http://www.mathworks.com/help/matlab/index.html",
-    "label": "MATLAB R2022b (Lonestar6)",
-    "shortDescription": "Run an interactive MATLAB 2022b session on Lonestar6. Submit a help ticket to get your license configured or approved.",
-    "longDescription": "Run an interactive MATLAB 2022b session on Lonestar6. Submit a help ticket to get your license configured or approved.",
-    "tags": [
-        "VNC",
-        "DCV"
+i{
+    "id": "matlab_ls6",
+    "version": "9.13.0",
+    "description": "Run an interactive MATLAB 2022b session on LoneStar6. Submit a help ticket to get your license configured or approved.",
+    "owner": "${apiUserId}",
+    "enabled": true,
+    "runtime": "SINGULARITY",
+    "runtimeVersion": null,
+    "runtimeOptions": [
+        "SINGULARITY_RUN"
     ],
-    "ontology": [],
-    "executionType": "HPC",
-    "executionSystem": "cep.community.exec.ls6",
-    "deploymentPath": "interactive-template",
-    "deploymentSystem": "cep.storage.applications",
-    "templatePath": "interactive-matlab.sh",
-    "testPath": "test/test.sh",
-    "checkpointable": false,
-    "modules": [
-        "load swr/21.2.5"
-    ],
-    "inputs": [
-        {
-            "id": "workingDirectory",
-            "value": {
-                "validator": "",
-                "visible": true,
-                "required": false,
-                "order": 0,
-                "enquote": false,
-                "default": ""
-            },
-            "details": {
-                "label": "Input File or Directory",
-                "description": "The file, or directory containing the files that you want to work on. This input will be copied to where your Matlab session runs. Click the 'Select Input' button to select the target file or directory.",
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xsd:string"
-                ],
-                "fileTypes": [
-                    "raw-0"
-                ]
-            }
-        }
-    ],
-    "parameters": [
-        {
-            "id": "desktop_resolution",
-            "value": {
-                "visible": true,
-                "required": true,
-                "type": "enumeration",
-                "order": 0,
-                "enquote": false,
-                "default": "1280x800",
-                "enum_values": [
-                    {
-                        "800x600": "800x600"
-                    },
-                    {
-                        "1280x800": "1280x800"
-                    },
-                    {
-                        "1920x1080": "1920x1080"
-                    },
-                    {
-                        "1920x1200": "1920x1200"
-                    },
-                    {
-                        "1600x1200": "1600x1200"
-                    },
-                    {
-                        "2560x1600": "2560x1600"
+    "containerImage": "docker://taccaci/interactive-base:1.1.0",
+    "jobType": "BATCH",
+    "maxJobs": -1,
+    "maxJobsPerUser": -1,
+    "strictFileInputs": true,
+    "jobAttributes": {
+        "description": "Run an interactive MATLAB 2022b session on LoneStar6. Submit a help ticket to get your license configured or approved.",
+        "dynamicExecSystem": false,
+        "execSystemConstraints": null,
+        "execSystemId": "ls6",
+        "execSystemExecDir": "${JobWorkingDir}",
+        "execSystemInputDir": "${JobWorkingDir}",
+        "execSystemOutputDir": "${JobWorkingDir}/output",
+        "execSystemLogicalQueue": "development",
+        "archiveSystemId": "cloud.data",
+        "archiveSystemDir": "HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}",
+        "archiveOnAppError": true,
+        "isMpi": false,
+        "mpiCmd": null,
+        "cmdPrefix": null,
+        "parameterSet": {
+            "appArgs": [],
+            "containerArgs": [
+                {
+                    "name": "Interactive Session and TACC Module Mounts",
+                    "description": "Mount the required folders in order for TAP, DCV, VNC, and TACC modules to function.",
+                    "inputMode": "FIXED",
+                    "arg": "--bind /bin,/lib,/lib64,/share,/run,/opt/apps,/usr/lib,/usr/lib64,/usr/libexec,/usr/bin,/usr/etc,/usr/include,/usr/share,/usr/sbin,/usr/src",
+                    "notes": {
+                        "isHidden": true
                     }
-                ]
-            },
-            "details": {
-                "label": "Desktop Resolution",
-                "description": "Set the desktop screen size for your visualization session.",
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xs:enumeration",
-                    "xs:string"
-                ]
+                }
+            ],
+            "schedulerOptions": [
+                {
+                    "name": "MATLAB TACC Scheduler Profile",
+                    "description": "Scheduler profile for TACC MATLAB R2022b.",
+                    "inputMode": "FIXED",
+                    "arg": "--tapis-profile matlab_2022b_ls6",
+                    "notes": {
+                        "isHidden": true
+                    }
+                },
+                {
+                    "name": "TACC Interactive Session Substrings",
+                    "description": "VNC and DCV sessions require the substrings 'tap_' and '-dcvserver' in the slurm job name in order to function.",
+                    "inputMode": "FIXED",
+                    "arg": "--job-name ${JobName}-dcvserver-tap_",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "envVariables": [
+                {
+                    "key": "_XTERM_CMD",
+                    "value": "swr -t 8 matlab",
+                    "description": "Command passed to XTERM, launched within the interactive session.",
+                    "inputMode": "FIXED",
+                    "notes": {
+                        "isHidden": true
+                    }
+                },
+                {
+                    "key": "APPEND_PATH",
+                    "value": "$PATH",
+                    "description": "Append host $PATH to Singularity container default $PATH.",
+                    "inputMode": "FIXED",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "archiveFilter": {
+                "includes": [],
+                "excludes": [],
+                "includeLaunchFiles": true
             }
         },
-        {
-            "id": "_webhook_base_url",
-            "semantics": {
-                "minCardinality": 1,
-                "ontology": [
-                    "xs:string"
-                ],
-                "maxCardinality": 1
-            },
-            "value": {
-                "required": true,
-                "enquote": false,
-                "default": null,
-                "visible": true,
-                "validator": null,
-                "type": "string",
-                "order": 1
-            },
-            "details": {
-                "argument": null,
-                "repeatArgument": false,
-                "description": null,
-                "showArgument": false,
-                "label": "Base portal webhook url."
-            }
-        },
-        {
-            "id": "_XTERM_CMD",
-            "value": {
-                "visible": true,
-                "required": true,
-                "type": "string",
-                "order": 2,
-                "enquote": false,
-                "default": "swr -t 8 matlab",
-                "validator": null
-            },
-            "details": {
-                "label": "XTERM Program CMD",
-                "description": null,
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xs:string"
-                ]
-            }
-        },
-        {
-            "id": "_MATLAB_VERSION",
-            "value": {
-                "visible": true,
-                "required": true,
-                "type": "string",
-                "order": 3,
-                "enquote": false,
-                "default": "2022b",
-                "validator": null
-            },
-            "details": {
-                "label": "Version of matlab to load",
-                "description": null,
-                "argument": null,
-                "showArgument": false,
-                "repeatArgument": false
-            },
-            "semantics": {
-                "minCardinality": 1,
-                "maxCardinality": 1,
-                "ontology": [
-                    "xs:string"
-                ]
-            }
-        }
+        "fileInputs": [],
+        "fileInputArrays": [],
+        "nodeCount": 1,
+        "coresPerNode": 1,
+        "memoryMB": 100,
+        "maxMinutes": 120,
+        "subscriptions": [],
+        "tags": []
+    },
+    "tags": [
+        "portalName: UTRC",
+        "portalName: CEP"
     ],
-    "outputs": []
+    "notes": {
+        "licenseType": "MATLAB",
+        "label": "MATLAB R2022b Interactive (LoneStar6)",
+        "helpUrl": "https://docs.tacc.utexas.edu/software/matlab/",
+        "hideNodeCountAndCoresPerNode": false,
+        "isInteractive": true,
+        "icon": "matlab",
+        "category": "Data Processing"
+    }
 }
