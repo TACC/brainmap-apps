@@ -1,24 +1,19 @@
-APPID ?= wallen-fsl-eyes-1.3.0
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-fsleyes-gui
+APPVER ?= 1.3.0
+DOCKERID ?= wjallen/fsleyes-gui:1.3.0
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/fsleyes:1.3.0 .
+	docker build -t $(DOCKERID) .
 
-run:
-	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 wjallen/fsleyes:1.3.0 fsleyes
-
-inter:
-	docker run --rm -it wjallen/fsleyes:1.3.0 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/fsleyes:1.3.0
+	docker push $(DOCKERID)
+
+gui:
+	xhost + 127.0.0.1
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=fsleyes $(DOCKERID)
