@@ -1,17 +1,17 @@
-FROM centos:7
+FROM python:3.9.18-bullseye
 
-RUN  yum -y update && \
-     yum -y install epel-release && \
-     yum -y install wget mesa-libGL mesa-libOSMesa && \
-     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-     sh Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3 && \
-     yum clean all && \
-     rm /Miniconda3-latest-Linux-x86_64.sh
+RUN apt-get update && \ 
+    apt-get upgrade -y && \
+    apt-get install -y build-essential && \
+    apt-get install -y libgtk2.0-dev libgtk-3-dev libwebkit2gtk-4.0-dev && \
+    apt-get install -y libjpeg-turbo-progs libtiff5-dev libsdl1.2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libnotify-dev && \
+    apt-get clean
 
-RUN /opt/miniconda3/bin/conda install -y -c conda-forge fsleyes
-RUN ln -s /opt/miniconda3/bin/fsleyes /usr/local/bin/fsleyes
+RUN pip install wxpython==4.1.1
+RUN pip install fsleyes
 
 ADD ./run.sh /app/
 RUN chmod +x /app/run.sh
 
 ENTRYPOINT ["/bin/bash", "/app/run.sh"]
+

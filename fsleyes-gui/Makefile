@@ -1,6 +1,6 @@
 APPID ?= wallen-fsleyes-gui
-APPVER ?= 1.3.0
-DOCKERID ?= wjallen/fsleyes-gui:1.3.0
+APPVER ?= 1.10.1
+DOCKERID ?= wjallen/fsleyes-gui:1.10.1
 
 deploy:
 	python3 ../utils/manage_apps.py app.json 
