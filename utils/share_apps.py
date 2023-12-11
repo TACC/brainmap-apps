@@ -44,7 +44,7 @@ def app_manager(client, filepath, userlist, unshare):
 
 def main():
     parser = argparse.ArgumentParser(description='Share an app with a user')
-    parser.add_argument('-u', action='store_true', help='unshare, use this flag to revoke pems')
+    parser.add_argument('-u', '--unshare', action='store_true', help='use this flag to revoke pems')
     parser.add_argument('filepath', help='app.json file for app to share')
     parser.add_argument('username', help='tacc username(s) to share with (comma sep)')
     args = parser.parse_args()
@@ -57,7 +57,7 @@ def main():
     t = Tapis(**TAPIS_CLIENT, download_latest_specs=True) 
     #t = Tapis(base_url='https://portals.tapis.io', **CLIENT_CREDENTIALS)
     #t.get_tokens()
-    app_manager(t, args.filepath, args.username.split(','), args.u)
+    app_manager(t, args.filepath, args.username.split(','), args.unshare)
 
 
 if __name__ == "__main__":
