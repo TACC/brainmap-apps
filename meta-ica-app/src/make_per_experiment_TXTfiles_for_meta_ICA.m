@@ -59,7 +59,8 @@ opts.ExtraColumnsRule = "ignore";                                          % fil
 opts.EmptyLineRule    = "read";                                            % file level properties
 opts                  = setvaropts(opts, ["Reference", "VarName2", "VarName3"],...
                                    "ThousandsSeparator", ",");             % variable properties
-vbpgingerALEtalexp    = readtable(strcat(txtpath,'/',theFILE), opts);      % import
+%vbpgingerALEtalexp    = readtable(strcat(txtpath,'/',theFILE), opts);      % import
+vbpgingerALEtalexp    = readtable(theFILE, opts);      % import
 clear opts                                                                 % clear temp var opts
 
 %% Import data to STRINGS
@@ -74,7 +75,8 @@ opts                  = setvaropts(opts, ["ReferenceTalairach", "VarName2", "Var
                                    "WhitespaceRule", "preserve");          % variable properties
 opts                  = setvaropts(opts, ["ReferenceTalairach", "VarName2", "VarName3"],...
                                    "EmptyFieldRule", "auto");              % variable properties
-vbpgingerALEtalexp1   = readmatrix(strcat(txtpath,'/',theFILE), opts);     % import
+%vbpgingerALEtalexp1   = readmatrix(strcat(txtpath,'/',theFILE), opts);     % import
+vbpgingerALEtalexp1   = readmatrix(theFILE, opts);     % import
 clear opts                                                                 % clear temp var opts
 
 %% check reference space

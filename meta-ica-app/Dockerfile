@@ -5,11 +5,10 @@ RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm \
 
 RUN yum install -y libXt
 
-#RUN wget https://nifti.nimh.nih.gov/pub/dist/src/fsliolib/imglob && \
-#    chmod +x imglob && \
-#    mv imglob /usr/local/bin/
+RUN rm /jdk-17_linux-x64_bin.rpm /anaconda-post.log
 
-COPY src/GingerALE.jar /app/GingerALE.jar
-COPY src/make_per_experiment_TXTfiles_for_meta_ICA.m /app/make_per_experiment_TXTfiles_for_meta_ICA.m
+ADD ./src /app/src
+ADD ./run.sh /app
+RUN chmod +x /app/run.sh
 
-RUN chmod +rx /app/*
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]

@@ -1,20 +1,15 @@
-APPID ?= wallen-meta-ica-1.0.0
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-meta-ica
+APPVER ?= 1.0.0
+DOCKERID ?= wjallen/meta-ica:1.0.0
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/meta-ica:1.0.0 .
+	docker build -t $(DOCKERID) .
 
-run:
-	docker run --rm -it -v $$PWD/test:/test wjallen/meta-ica:1.0.0 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/meta-ica:1.0.0
+	docker push $(DOCKERID)
