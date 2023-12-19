@@ -1,9 +1,7 @@
 *.jar
 *.zip
-graph-theory-app/src/
-*/test/
+*.gz
 .DS_Store
 __pycache__/
-src/
 SECRETS.py
 .python-version
