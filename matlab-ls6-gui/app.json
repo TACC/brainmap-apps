@@ -1,4 +1,4 @@
-i{
+{
     "id": "matlab_ls6",
     "version": "9.13.0",
     "description": "Run an interactive MATLAB 2022b session on LoneStar6. Submit a help ticket to get your license configured or approved.",
