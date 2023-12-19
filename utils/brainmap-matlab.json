@@ -1,0 +1,22 @@
+{
+    "name": "brainmap-matlab",
+    "description": "Scheduler Profile for BrainMap Apps that Require Matlab",
+    "moduleLoads": [
+        {
+            "modulesToLoad": [
+                "tacc-apptainer",
+                "matlab/2022b"
+            ],
+            "moduleLoadCommand": "module load"
+        },
+        {
+            "modulesToLoad": [
+                "xalt"
+            ],
+            "moduleLoadCommand": "module unload"
+        }
+    ],
+    "hiddenOptions": [
+        "MEM"
+    ]
+}
