@@ -1,70 +1,120 @@
 {
-  "checkpointable": false,
-  "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.lonestar6.wallen",
-  "executionType": "HPC",
-  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "cloud.corral.work.wallen",
-  "helpURI": "https://www.brainmap.org/",
-  "label": "{{ app.label }}",
-  "shortDescription": "{{ app.description }}",
-  "longDescription": "This utility takes a Sleuth export text file as input, and identifies coordinates that are reported redundantly within a paper. It exports individual experiment text files with no filtering, experiment-level filtering, or paper-level filtering applied.",
-  "modules": [
-    "load tacc-singularity",
-    "load matlab/2022b"
+  "id": "wallen-redundancy-filter",
+  "version": "1.0.0",
+  "description": "This utility takes a Sleuth export text file as input, and identifies coordinates that are reported redundantly within a paper. It exports individual experiment text files with no filtering, experiment-level filtering, or paper-level filtering applied.",
+  "owner": "${apiUserId}",
+  "enabled": true,
+  "runtime": "SINGULARITY",
+  "runtimeVersion": null,
+  "runtimeOptions": [
+      "SINGULARITY_RUN"
   ],
-  "ontology": [],
-  "parallelism": "SERIAL",
-  "tags": [],
-  "templatePath": "runner.sh",
-  "testPath": "tester.sh",
-  "version": "{{ app.version }}",
-  "defaultMaxRunTime": "00:30:00",
-  "defaultQueue": "development",
-  "inputs": [    {
-    "id": "foci_text",
-    "details": {
-      "label": "Input File",
-      "description": "A text file of foci data in MNI or Talairach format"
-    },
-    "value": {
-      "default": "",
-      "required": true,
-      "visible": true,
-      "order": 1
-    },
-    "semantics": {}
-  }],
-  "parameters": [
-    {
-      "id": "filtering",
-      "value": {
-        "default": "0",
-        "type": "enumeration",
-        "enum_values": [
-            { "0": "No Filtering" },
-            { "1": "Experiment-level filtering" },
-            { "2": "Paper-level filtering"}
-        ],
-        "visible": true,
-        "required": true,
-        "order": 1
-      },
-      "details": {
-        "label": "Filtering",
-        "description": "Specify the type of filtering to apply to the input data"
+  "containerImage": "docker://wjallen/redundancy-filter:1.0.0",
+  "jobType": "BATCH",
+  "maxJobs": -1,
+  "maxJobsPerUser": -1,
+  "strictFileInputs": false,
+  "jobAttributes": {
+      "description": "Parse and Filter Coordinates for Export as Individual Files",
+      "dynamicExecSystem": false,
+      "execSystemConstraints": null,
+      "execSystemId": "tacc.lonestar6.wallen",
+      "execSystemExecDir": "${JobWorkingDir}",
+      "execSystemInputDir": "${JobWorkingDir}",
+      "execSystemOutputDir": "${JobWorkingDir}",
+      "execSystemLogicalQueue": "development",
+      "archiveSystemId": "tacc.lonestar6.wallen",
+      "archiveSystemDir": "HOST_EVAL($STOCKYARD)/tapis/archive/${JobCreateDate}/${JobName}-${JobUUID}",
+      "archiveOnAppError": true,
+      "isMpi": false,
+      "mpiCmd": null,
+      "cmdPrefix": null,
+      "nodeCount": 1,
+      "coresPerNode": 1,
+      "memoryMB": 100,
+      "maxMinutes": 30,
+      "subscriptions": [],
+      "tags": [],
+      "fileInputs": [
+          {
+              "name": "Foci Text",
+              "description": "A text file of foci data in MNI or Talairach format",
+              "inputMode": "REQUIRED",
+              "autoMountLocal": true,
+              "sourceUrl": null,
+              "targetPath": "*"
+          }
+      ],
+      "fileInputArrays": [],
+      "parameterSet": {
+          "appArgs": [
+              {
+                  "name": "Default run command",
+                  "description": "Default run command",
+                  "arg": "/bin/bash /app/run.sh",
+                  "notes": { 
+                      "isHidden": true
+                  }
+              },
+              {
+                  "name": "Filtering",
+                  "description": "Specify the type of filtering to apply to the input data",
+                  "inputMode": "REQUIRED",
+                  "arg": "0",
+                  "notes": {
+                      "enum_values": [
+                          { "0": "No Filtering" },
+                          { "1": "Experiment-level filtering" },
+                          { "2": "Paper-level filtering" }
+                      ]
+                  }
+              }
+          ],
+          "containerArgs": [
+              {
+                  "name": "Mounts required to use Matlab",
+                  "description": "Mounts required to use Matlab",
+                  "inputMode": "FIXED",
+                  "arg": " --bind /opt/intel:/opt/intel ",
+                  "notes": {
+                      "isHidden": true
+                  }
+              }
+          ],
+          "schedulerOptions": [
+              {
+                  "name": "brainmap-matlab",
+                  "description": "Scheduler Profile for BrainMap Apps that Require Matlab",
+                  "inputMode": "FIXED",
+                  "arg": "--tapis-profile brainmap-matlab",
+                  "notes": {
+                      "isHidden": true
+                  }
+              }
+          ],
+          "envVariables": [],
+          "archiveFilter": {
+              "includes": [],
+              "excludes": [],
+              "includeLaunchFiles": true
+          }
       }
-    },
-    {
-      "id": "CONTAINER_IMAGE",
-      "value": {
-        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
-        "type": "string",
-        "visible": false,
-        "required": true,
-        "order": 1000
-      }
-    }
+  },
+  "tags": [
+      "portalName: CEP",
+      "portalName: Brainmap"
   ],
-  "outputs": []
+  "notes": {
+      "label": "Redundancy Filter",
+      "helpUrl": "https://www.brainmap.org/",
+      "hideNodeCountAndCoresPerNode": true,
+      "isInteractive": false,
+      "icon": null,
+      "category": "Analysis",
+      "queueFilter": [
+          "development",
+          "normal",
+          "vm-small"
+      ]
+  }
 }
