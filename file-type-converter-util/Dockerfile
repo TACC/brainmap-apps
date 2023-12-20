@@ -1,8 +1,9 @@
-FROM openjdk:17.0.2-jdk
+FROM eclipse-temurin:17.0.7_7-jdk
 
-RUN microdnf upgrade && \
-    microdnf install libXext libXrender libXtst libXt && \
-    microdnf clean all
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y libxt6 && \
+    apt-get clean
 
 ADD ./src /app/src
 ADD ./run.sh /app
