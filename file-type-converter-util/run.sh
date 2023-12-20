@@ -44,7 +44,7 @@ echo -n "starting: "
 date
 
 echo "================================================================"
-echo "COMMAND = ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
+echo "COMMAND = ${COMMAND} ${PARAMS} -r '${MATLAB_FUNC}' "
 echo "================================================================"
 ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
@@ -63,11 +63,11 @@ while IFS= read -r line; do
         echo "$other_line" >> "${output_filename}"
         tail -n +2 tmp_file_no_headers > tmp_tmp_tmp && mv tmp_tmp_tmp tmp_file_no_headers  # use tail to remove first line from second file - a bit faster than sed
     fi
-done < ${input_file}
+done < ${foci_text}
 
 rm ${transform}.m readTSV.m writeTSV.m
 rm tmp_file_no_headers
-mv ${input_file} COPY_OF_${input_file}
+mv ${foci_text} COPY_OF_${foci_text}
 
 echo -n "ending: "
 date
