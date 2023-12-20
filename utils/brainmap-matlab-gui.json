@@ -1,0 +1,23 @@
+{
+    "name": "brainmap-matlab-gui",
+    "description": "Scheduler Profile for BrainMap Matlab and GUI Apps",
+    "moduleLoads": [
+        {
+            "modulesToLoad": [
+                "swr",
+                "tacc-apptainer",
+                "matlab/2022b"
+            ],
+            "moduleLoadCommand": "module load"
+        },
+        {
+            "modulesToLoad": [
+                "xalt"
+            ],
+            "moduleLoadCommand": "module unload"
+        }
+    ],
+    "hiddenOptions": [
+        "MEM"
+    ]
+}

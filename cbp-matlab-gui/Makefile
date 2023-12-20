@@ -1,10 +1,15 @@
-APPID ?= wallen-cbp-matlab-1.0.0
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-cbp-matlab-gui
+APPVER ?= 1.0.0
+DOCKERID ?= wjallen/cbp-matlab-gui:1.0.0
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
+	python3 ../utils/manage_apps.py app.json 
 
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
+build:
+	docker build -t $(DOCKERID) .
+
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
+
+push:
+	docker push $(DOCKERID)
