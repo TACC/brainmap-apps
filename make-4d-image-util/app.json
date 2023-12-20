@@ -1,104 +1,144 @@
 {
-  "checkpointable": false,
-  "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.lonestar6.wallen",
-  "executionType": "HPC",
-  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "cloud.corral.work.wallen",
-  "helpURI": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/MELODIC",
-  "label": "{{ app.label }}",
-  "shortDescription": "{{ app.description }}",
-  "longDescription": "Given a Sleuth export in MNI or Tal format, split each study into an individual file, generate one Nifti image per activation map, scale images using fslmaths, and merge images into one final 4D Nifti image.",
-  "modules": [
-    "load tacc-singularity"
+  "id": "wallen-make-4d-image",
+  "version": "1.0.0",
+  "description": "Given a Sleuth export in MNI or Tal format, split each study into an individual file, generate one Nifti image per activation map, scale images using fslmaths, and merge images into one final 4D Nifti image.",
+  "owner": "${apiUserId}",
+  "enabled": true,
+  "runtime": "SINGULARITY",
+  "runtimeVersion": null,
+  "runtimeOptions": [
+      "SINGULARITY_RUN"
   ],
-  "ontology": [],
-  "parallelism": "SERIAL",
-  "tags": [],
-  "templatePath": "runner.sh",
-  "testPath": "tester.sh",
-  "version": "{{ app.version }}",
-  "defaultMaxRunTime": "02:00:00",
-  "defaultQueue": "development",
-  "inputs": [    {
-    "id": "foci_text",
-    "details": {
-      "label": "Input File",
-      "description": "A text file of foci data in MNI or Talairach format"
-    },
-    "value": {
-        "default": "",
-        "required": true,
-        "visible": true,
-        "order": 1
-      },
-    "semantics": {}
-  }],
-  "parameters": [
-    {
-      "id": "coord_space",
-      "value": {
-        "default": "Tal_wb",
-        "type": "enumeration",
-        "enum_values": [
-            { "Tal_wb": "Talairach" },
-            { "MNI152_wb": "MNI" }
-        ],
-        "visible": true,
-        "required": true,
-        "order": 1
-      },
-      "details": {
-        "label": "Coordinate Space",
-        "description": "Specify the format of the input foci data"
+  "containerImage": "docker://wjallen/make-4d-image:1.0.0",
+  "jobType": "BATCH",
+  "maxJobs": -1,
+  "maxJobsPerUser": -1,
+  "strictFileInputs": false,
+  "jobAttributes": {
+      "description": "Make a 4D Nifti Image from Sleuth Export",
+      "dynamicExecSystem": false,
+      "execSystemConstraints": null,
+      "execSystemId": "tacc.lonestar6.wallen",
+      "execSystemExecDir": "${JobWorkingDir}",
+      "execSystemInputDir": "${JobWorkingDir}",
+      "execSystemOutputDir": "${JobWorkingDir}",
+      "execSystemLogicalQueue": "development",
+      "archiveSystemId": "tacc.lonestar6.wallen",
+      "archiveSystemDir": "HOST_EVAL($STOCKYARD)/tapis/archive/${JobCreateDate}/${JobName}-${JobUUID}",
+      "archiveOnAppError": true,
+      "isMpi": false,
+      "mpiCmd": null,
+      "cmdPrefix": null,
+      "nodeCount": 1,
+      "coresPerNode": 1,
+      "memoryMB": 100,
+      "maxMinutes": 120,
+      "subscriptions": [],
+      "tags": [],
+      "fileInputs": [
+          {
+              "name": "Foci Text",
+              "description": "A text file of foci data in MNI or Talairach format",
+              "inputMode": "REQUIRED",
+              "autoMountLocal": true,
+              "sourceUrl": null,
+              "targetPath": "*"
+          }
+      ],
+      "fileInputArrays": [],
+      "parameterSet": {
+          "appArgs": [
+              {
+                  "name": "Default run command",
+                  "description": "Default run command",
+                  "arg": "/bin/bash /app/run.sh",
+                  "notes": { 
+                      "isHidden": true
+                  }
+              },
+              {
+                  "name": "Coordinate Space",
+                  "description": "Specify the format of the input foci data",
+                  "inputMode": "REQUIRED",
+                  "arg": "Tal_wb",
+                  "notes": {
+                      "enum_values": [
+                          {
+                              "Tal_wb": "Talairach"
+                          },
+                          {
+                              "MNI152_wb": "MNI"
+                          }
+                      ]
+                  }
+              },
+              {
+                  "name": "Mask Size",
+                  "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks",
+                  "inputMode": "REQUIRED",
+                  "arg": ".nii.gz",
+                  "notes": {
+                      "enum_values": [
+                          {
+                              ".nii.gz": "More Conservative (Smaller)"
+                          },
+                          {
+                              "_dil.nii.gz": "Less Conservative (Dilated 2mm)"
+                          }
+                      ]
+                  }
+              },
+              {
+                  "name": "Normalize",
+                  "description": "Normalize all experiments to Subjects=4",
+                  "inputMode": "REQUIRED",
+                  "arg": "true",
+                  "notes": {                        
+                    "enum_values": [
+                        {
+                            "true": "True"
+                        },
+                        {
+                            "false": "False"
+                        }
+                ]}
+              }  
+          ],
+          "containerArgs": [],
+          "schedulerOptions": [
+              {
+                  "name": "brainmap-default",
+                  "description": "Default Scheduler Profile for BrainMap Apps",
+                  "inputMode": "FIXED",
+                  "arg": "--tapis-profile brainmap-default",
+                  "notes": {
+                      "isHidden": true
+                  }
+              }
+          ],
+          "envVariables": [],
+          "archiveFilter": {
+              "includes": [],
+              "excludes": [],
+              "includeLaunchFiles": true
+          }
       }
-    },
-    {
-      "id": "mask_size",
-      "value": {
-        "default": ".nii.gz",
-        "type": "enumeration",
-        "enum_values": [
-            { ".nii.gz": "More Conservative (Smaller)" },
-            { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
-        ],
-        "visible": true,
-        "required": true,
-        "order": 2
-      },
-      "details": {
-        "label": "Mask Size",
-        "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks"
-      }
-    },
-    {
-      "id": "normalize",
-      "value": {
-        "default": "true",
-        "type": "enumeration",
-        "enum_values": [
-            { "true": "True" },
-            { "false": "False" }
-        ],
-        "visible": true,
-        "required": true,
-        "order": 3
-      },
-      "details": {
-        "label": "Normalize",
-        "description": "Normalize all experiments to Subjects=4"
-      }
-    },
-    {
-      "id": "CONTAINER_IMAGE",
-      "value": {
-        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
-        "type": "string",
-        "visible": false,
-        "required": true,
-        "order": 1000
-      }
-    }
+  },
+  "tags": [
+      "portalName: CEP",
+      "portalName: Brainmap"
   ],
-  "outputs": []
+  "notes": {
+      "label": "Make 4D Image",
+      "helpUrl": "https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/MELODIC",
+      "hideNodeCountAndCoresPerNode": true,
+      "isInteractive": false,
+      "icon": null,
+      "category": "Analysis",
+      "queueFilter": [
+          "development",
+          "normal",
+          "vm-small"
+      ]
+  }
 }
