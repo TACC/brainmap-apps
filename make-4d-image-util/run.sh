@@ -63,7 +63,7 @@ if [[ "${NORM}" == "true" ]];
 then
     sed -i 's/.*Subjects=.*/\/\/ Subjects=4/' ${_tapisExecSystemExecDir}/${INPUT}
 fi
-dos2unix ${INPUT}
+dos2unix ${_tapisExecSystemExecDir}/${INPUT}
 awk -v RS= '{print > ("tempdir1/data_" NR ".txt")}' ${_tapisExecSystemExecDir}/${INPUT}
 
 
