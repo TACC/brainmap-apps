@@ -1,43 +1,52 @@
-# Allow over-ride
-if [ -z "${CONTAINER_IMAGE}" ]
-then
-    CONTAINER_IMAGE="wjallen/file-type-converter:1.0.0"
-fi
+#!/bin/bash
 
-SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
-SING_IMG="${SING_IMG}.sif"
-singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
-
-_INPUT_FILE=${input_file}
-_TRANSFORM=${transform}
-_OUTPUT_FILENAME=${output_filename}
-
-# Silence xalt errors
-module unload xalt
-
-# Needed for matlab
-BINDPATH=" --bind /opt/intel:/opt/intel "
+transform=$1
+output_filename=$2
+foci_text=$(find * -type f | grep -v 'tapisjob')
 
 COMMAND=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
 PARAMS=" -nodesktop -nodisplay -nosplash "
-MATLAB_FUNC=" ${transform} ${input_file} ${output_filename} "
+MATLAB_FUNC=" "
+
+# Get transform
+if [ -n "${transform}" ];
+then
+    MATLAB_FUNC=" ${MATLAB_FUNC} ${transform} "
+else
+    MATLAB_FUNC=" ${MATLAB_FUNC} icbm_spm2tal "
+fi
+
+# Check foci text
+if [ -n "${foci_text}" ];
+then
+    MATLAB_FUNC=" ${MATLAB_FUNC} ${foci_text} "
+else
+	echo "Error: foci_text is undefined"
+	exit
+fi
+
+# Get output filename
+if [ -n "${output_filename}" ];
+then
+    MATLAB_FUNC=" ${MATLAB_FUNC} ${output_filename} "
+else
+    MATLAB_FUNC=" ${MATLAB_FUNC} output.txt "
+fi
+
 
 # Pull some assets out of container, input file needs to be in same dir
-singularity exec ${SING_IMG} cp /src/${transform}.m .
-singularity exec ${SING_IMG} cp /src/readTSV.m .
-singularity exec ${SING_IMG} cp /src/writeTSV.m .
+cp /app/src/${transform}.m ./
+cp /app/src/readTSV.m ./
+cp /app/src/writeTSV.m ./
 
 # Log commands, timing, run job
 echo -n "starting: "
 date
 
 echo "================================================================"
-echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
+echo "COMMAND = ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
 echo "================================================================"
-echo "COMMAND = singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
-echo "================================================================"
-
-singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
+${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
 mv ${output_filename} tmp_file_no_headers
 
@@ -56,13 +65,9 @@ while IFS= read -r line; do
     fi
 done < ${input_file}
 
-
-rm ${SING_IMG}
 rm ${transform}.m readTSV.m writeTSV.m
 rm tmp_file_no_headers
 mv ${input_file} COPY_OF_${input_file}
-# rm ${input_file}
-
 
 echo -n "ending: "
 date

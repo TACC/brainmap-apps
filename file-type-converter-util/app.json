@@ -1,87 +1,133 @@
 {
-  "checkpointable": false,
-  "name": "wallen-{{ app.name }}",
-  "executionSystem": "tacc.lonestar6.wallen",
-  "executionType": "HPC",
-  "deploymentPath": "tapis/apps/wallen-{{ app.name }}-{{ app.version }}",
-  "deploymentSystem": "cloud.corral.work.wallen",
-  "helpURI": "https://brainmap.org/icbm2tal/",
-  "label": "{{ app.label }}",
-  "shortDescription": "{{ app.description }}",
-  "longDescription": "BrainMap uses an implementation of the icbm2tal transform to convert between MNI coordinates and Talairach space. Separate best-fit transforms were determined for SPM2 and FSL. A best-fit icbm2tal transform was also formulated by pooling SPM2 and FSL data.",
-  "modules": [
-    "load tacc-singularity",
-    "load matlab/2022b"
+  "id": "wallen-file-type-converter",
+  "version": "1.0.0",
+  "description": "BrainMap uses an implementation of the icbm2tal transform to convert between MNI coordinates and Talairach space. Separate best-fit transforms were determined for SPM2 and FSL. A best-fit icbm2tal transform was also formulated by pooling SPM2 and FSL data.",
+  "owner": "${apiUserId}",
+  "enabled": true,
+  "runtime": "SINGULARITY",
+  "runtimeVersion": null,
+  "runtimeOptions": [
+      "SINGULARITY_RUN"
   ],
-  "ontology": [],
-  "parallelism": "SERIAL",
-  "tags": [],
-  "templatePath": "runner.sh",
-  "testPath": "tester.sh",
-  "version": "{{ app.version }}",
-  "defaultMaxRunTime": "00:30:00",
-  "defaultQueue": "development",
-  "inputs": [    {
-    "id": "input_file",
-    "details": {
-      "label": "Input File",
-      "description": "A text file of foci data in MNI or Talairach format"
-    },
-    "value": {
-      "default": "",
-      "required": true,
-      "visible": true,
-      "order": 1
-    },
-    "semantics": {}
-  }],
-  "parameters": [
-    {
-      "id": "transform",
-      "value": {
-        "default": "icbm_spm2tal",
-        "enumValues":[
-          {"icbm_spm2tal": "MNI (SPM) to Talairach"},
-          {"icbm_fsl2tal": "MNI (FSL) to Talairach"},
-          {"icbm_other2tal": "MNI (Other) to Talairach"},
-          {"tal2icbm_spm": "Talairach to MNI (SPM)"},
-          {"tal2icbm_fsl": "Talairach to MNI (FSL)"},
-          {"tal2icbm_other": "Talairach to MNI (Other)"}
-        ],
-        "type": "enumeration",
-        "visible": true, 
-        "required": true,
-        "order": 1
-      },
-      "details": {
-        "label": "Choose Transform",
-        "description": "Choose the conversion type to transform your coordinates"
+  "containerImage": "docker://wjallen/file-type-converter:1.0.0",
+  "jobType": "BATCH",
+  "maxJobs": -1,
+  "maxJobsPerUser": -1,
+  "strictFileInputs": false,
+  "jobAttributes": {
+      "description": "Converting Between MNI and Tailarach Spaces",
+      "dynamicExecSystem": false,
+      "execSystemConstraints": null,
+      "execSystemId": "tacc.lonestar6.wallen",
+      "execSystemExecDir": "${JobWorkingDir}",
+      "execSystemInputDir": "${JobWorkingDir}",
+      "execSystemOutputDir": "${JobWorkingDir}",
+      "execSystemLogicalQueue": "development",
+      "archiveSystemId": "tacc.lonestar6.wallen",
+      "archiveSystemDir": "HOST_EVAL($STOCKYARD)/tapis/archive/${JobCreateDate}/${JobName}-${JobUUID}",
+      "archiveOnAppError": true,
+      "isMpi": false,
+      "mpiCmd": null,
+      "cmdPrefix": null,
+      "nodeCount": 1,
+      "coresPerNode": 1,
+      "memoryMB": 100,
+      "maxMinutes": 30,
+      "subscriptions": [],
+      "tags": [],
+      "fileInputs": [
+          {
+              "name": "Foci Text",
+              "description": "A text file of foci data in MNI or Talairach format",
+              "inputMode": "REQUIRED",
+              "autoMountLocal": true,
+              "sourceUrl": null,
+              "targetPath": "*"
+          }
+      ],
+      "fileInputArrays": [],
+      "parameterSet": {
+          "appArgs": [
+              {
+                  "name": "Default run command",
+                  "description": "Default run command",
+                  "arg": "/bin/bash /app/run.sh",
+                  "notes": { 
+                      "isHidden": true
+                  }
+              },
+              {
+                  "name": "Transform Type",
+                  "description": "Choose the conversion type to transform your coordinates",
+                  "inputMode": "REQUIRED",
+                  "arg": "icbm_spm2tal",
+                  "notes": {
+                      "enum_values": [
+                          {"icbm_spm2tal": "MNI (SPM) to Talairach"},
+                          {"icbm_fsl2tal": "MNI (FSL) to Talairach"},
+                          {"icbm_other2tal": "MNI (Other) to Talairach"},
+                          {"tal2icbm_spm": "Talairach to MNI (SPM)"},
+                          {"tal2icbm_fsl": "Talairach to MNI (FSL)"},
+                          {"tal2icbm_other": "Talairach to MNI (Other)"}
+                      ]
+                  }
+              },
+              {
+                  "name": "Output Filename",
+                  "description": "Choose a name for the output file",
+                  "inputMode": "REQUIRED",
+                  "arg": "output.txt",
+                  "notes": {}
+              }
+          ],
+          "containerArgs": [
+              {
+                  "name": "Mounts required to use Matlab",
+                  "description": "Mounts required to use Matlab",
+                  "inputMode": "FIXED",
+                  "arg": " --bind /opt/intel:/opt/intel ",
+                  "notes": {
+                      "isHidden": true
+                  }
+              }
+          ],
+          "schedulerOptions": [
+              {
+                  "name": "brainmap-matlab",
+                  "description": "Scheduler Profile for BrainMap Apps that Require Matlab",
+                  "inputMode": "FIXED",
+                  "arg": "--tapis-profile brainmap-matlab",
+                  "notes": {
+                      "isHidden": true
+                  }
+              }
+          ],
+          "envVariables": [],
+          "archiveFilter": {
+              "includes": [],
+              "excludes": [],
+              "includeLaunchFiles": true
+          }
       }
-    },
-    {
-      "id": "output_filename",
-      "value": {
-        "default": "output.txt",
-        "type": "string",
-        "visible": true, 
-        "required": true,
-        "order": 2
-      },
-      "details": {
-        "label": "Output Filename",
-        "description": "Choose a name for the output file"
-      }
-    },
-    {
-      "id": "CONTAINER_IMAGE",
-      "value": {
-        "default": "{{ docker.namespace }}/{{ docker.repo }}:{{ docker.tag }}",
-        "type": "string",
-        "visible": false,
-        "required": true,
-        "order": 3
-      }
-    }
+  },
+  "tags": [
+      "portalName: CEP",
+      "portalName: Brainmap"
   ],
-  "outputs": []
+  "notes": {
+      "label": "File Type Converter",
+      "helpUrl": "https://brainmap.org/icbm2tal/",
+      "hideNodeCountAndCoresPerNode": true,
+      "isInteractive": false,
+      "icon": null,
+      "category": "Analysis",
+      "queueFilter": [
+          "development",
+          "normal",
+          "vm-small"
+      ]
+  }
 }
+
+
+
