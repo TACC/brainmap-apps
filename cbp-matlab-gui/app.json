@@ -39,7 +39,7 @@
             {
                 "name": "Input File or Directory",
                 "description": "The file, or directory containing the files that you want to work on. This input will be copied to where your Matlab session runs. Click the 'Select Input' button to select the target file or directory",
-                "inputMode": "REQUIRED",
+                "inputMode": "OPTIONAL",
                 "autoMountLocal": true,
                 "sourceUrl": null,
                 "targetPath": "*"
