@@ -25,6 +25,7 @@ RUN apt-get install -y tcsh xfonts-base python-qt4       \
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libgsl.so.23 /usr/lib/x86_64-linux-gnu/libgsl.so.19
 
+# afni
 RUN curl -O https://afni.nimh.nih.gov/pub/dist/bin/misc/@update.afni.binaries && \
     tcsh @update.afni.binaries -bindir /opt/abin -package linux_ubuntu_16_64 -do_extras
 
@@ -58,7 +59,7 @@ RUN wget ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/5.3.0/freesurfer-L
     tar -xzf freesurfer-Linux-centos4_x86_64-stable-pub-v5.3.0.tar.gz -C /opt && \
     rm /freesurfer-Linux-centos4_x86_64-stable-pub-v5.3.0.tar.gz
 
-COPY test/freesurfer_license /opt/freesurfer/.license
+COPY src/freesurfer_license /opt/freesurfer/.license
 
 # freesurfer env 
 ENV PATH /opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:${PATH}
@@ -114,3 +115,9 @@ RUN sed -i 's/brain.mgz/brain.mgh/' /opt/CBIG/stable_projects/meta-analysis/Ngo2
 # #    for FUNC in display fieldnames isfield plot save struct subsasgn subsref; do mv _gifti/${FUNC}.m _gifti/XXX${FUNC}.m; done
 # #WORKDIR /
 
+
+ADD ./src /app/src
+ADD ./run.sh /app
+RUN chmod +x /app/run.sh
+
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]

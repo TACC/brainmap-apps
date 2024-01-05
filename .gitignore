@@ -6,3 +6,4 @@ __pycache__/
 SECRETS.py
 .python-version
 */test/
+freesurfer_license
