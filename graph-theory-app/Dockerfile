@@ -1,8 +1,11 @@
 FROM openjdk:17.0.2-jdk
 
 RUN microdnf upgrade && \
-    microdnf install libXext libXrender libXtst libXt
+    microdnf install libXext libXrender libXtst libXt && \
+    microdnf clean all
 
-COPY ./src/xGTM_portal /xGTM_portal
+ADD ./src /app/src
+ADD ./run.sh /app
+RUN chmod +x /app/run.sh
 
-RUN chmod -R +rx /xGTM_portal/
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]

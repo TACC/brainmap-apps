@@ -1,40 +1,64 @@
-# Allow over-ride
-if [ -z "${CONTAINER_IMAGE}" ]
+#!/bin/bash
+
+radius=$1
+ale_threshold=$2
+filtering=$3
+foci_text=$(find * -type f | grep -v 'tapisjob')
+
+# Check foci text
+if [ -n "${foci_text}" ];
 then
-    CONTAINER_IMAGE="wjallen/graph-theory:1.0.0"
+    INPUT="${foci_text}"
+else
+	echo "Error: foci_text is undefined"
+	exit
 fi
 
-SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
-SING_IMG="${SING_IMG}.sif"
-singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
+# Get radius
+if [ -n "${radius}" ];
+then
+    RADIUS="${radius}"
+else
+    RADIUS="6"
+fi
 
-# Silence xalt errors
-module unload xalt
+# Get ALE threshold
+if [ -n "${ale_threshold}" ];
+then
+    ALE_THRESHOLD="${ale_threshold}"
+else
+    ALE_THRESHOLD="75"
+fi
 
-# Needed for matlab
-BINDPATH=" --bind /opt/intel:/opt/intel "
+# Get filtering
+if [ -n "${filtering}" ];
+then
+    FILTER="${filtering}"
+else
+    FILTER="0"
+fi
 
-COMMAND=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
-PARAMS=" -nodesktop -nodisplay -nosplash "
-MATLAB_FUNC="gtm ${PWD}/xGTM_portal/ ${foci_text} ${radius} ${ale} ${filter}"
 
 # Pull some assets out of container, input file needs to be in asset dir
-singularity exec ${SING_IMG} cp -r /xGTM_portal .
+cp -r /app/src/xGTM_portal .
+cp -r /app/src/gtm.m .
 mv ${foci_text} xGTM_portal/
 chmod +rx xGTM_portal/${foci_text}
+
 
 # Log commands, timing, run job
 echo -n "starting: "
 date
-
+COMMAND=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
+PARAMS=" -nodesktop -nodisplay -nosplash "
+MATLAB_FUNC="gtm ${PWD}/xGTM_portal/ ${foci_text} ${RADIUS} ${ALE_THRESHOLD} ${FILTER}"
 echo "================================================================"
-echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
+echo "COMMAND = ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
 echo "================================================================"
-echo "COMMAND = singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
-echo "================================================================"
+${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
-singularity exec ${BINDPATH} ${SING_IMG} ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
+# Assemble and clean up output
 mkdir output/
 _FOCI_TEXT="${foci_text}"
 mv xGTM_portal/${_FOCI_TEXT} ./
@@ -57,7 +81,8 @@ fi
 tar -czf MA_Z.tar.gz -C xGTM_portal/ MA_Z/
 mv MA_Z.tar.gz output/
 
-rm -rf ${SING_IMG} xGTM_portal/
+rm -rf xGTM_portal/
+rm gtm.m
 
 echo -n "ending: "
 date
