@@ -1,6 +1,6 @@
 {
   "id": "wallen-graph-theory",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Graph theory modeling constructs may be useful to infer brain networks from neuroimages.",
   "owner": "${apiUserId}",
   "enabled": true,
@@ -9,7 +9,7 @@
   "runtimeOptions": [
       "SINGULARITY_RUN"
   ],
-  "containerImage": "docker://wjallen/graph-theory:1.0.0",
+  "containerImage": "docker://wjallen/graph-theory:1.0.1",
   "jobType": "BATCH",
   "maxJobs": -1,
   "maxJobsPerUser": -1,
