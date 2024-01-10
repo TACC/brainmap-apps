@@ -1,18 +1,22 @@
-# Allow over-ride
-if [ -z "${CONTAINER_IMAGE}" ]
+#!/bin/bash
+
+sector=$1
+radius=$2
+coord_space=$3
+mask_size=$4
+seed_rois=$(find * -type f | grep -v 'tapisjob')
+ref_path="/work/08531/brainmap/tapis/data/macm/2023-12-05"
+
+# Check seed rois
+if [ -n "${seed_rois}" ];
 then
-    CONTAINER_IMAGE="wjallen/macm:1.0.0"
+    INPUT="${foci_text}"
+    INPUT_ROIS=${seed_rois}
+    INPUT_ROIS_BN="$(echo ${seed_rois} | cut -d '.' -f1 )"
+else
+	echo "Error: seed_rois is undefined"
+	exit
 fi
-
-SING_IMG=$( basename ${CONTAINER_IMAGE} | tr ':' '_' )
-SING_IMG="${SING_IMG}.sif"
-
-# silence xalt errors
-module unload xalt
-
-# Step 0: Gather input
-INPUT_ROIS=${seed_rois}
-INPUT_ROIS_BN="$(echo ${seed_rois} | cut -d '.' -f1 )"
 
 # sector - can be vbm, vbp, or ta
 if [ -n "${sector}" ];
@@ -22,37 +26,31 @@ else
     DB_SECTOR="vbm"
 fi
 
-# radius - 6mm for fmacm, 4mm for smacm - or 2mm for all?
+# radius - 6mm for fmacm, 4mm for smacm
 if [ -n "${radius}" ];
 then
     RADIUS="${radius}"
 else
-    RADIUS="2"
+    RADIUS="4"
 fi
 
-# Add Mask File
-# can be MNI152_wb.nii.gz, MNI152_wb_dil.nii.gz, Tal_wb.nii.gz, Tal_wb_dil.nii.gz
-MASK_FILE="${coord_space}${mask_size}"
-
+# coord_space can be Tal_wb or MNI152_wb
 if [[ "${coord_space}" == "Tal_wb" ]];
 then
     COORD_FORMAT="tal"
-	COORD_FORMAT_FOR_SPHERES="-tal"
+    COORD_FORMAT_FOR_SPHERES="-tal"
 else
     COORD_FORMAT="mni"
-	COORD_FORMAT_FOR_SPHERES=""
+    COORD_FORMAT_FOR_SPHERES=""
 fi
 
+# Add Mask File
+MASK_FILE="${coord_space}${mask_size}"
 
 REF_COORDS_BN=ref_coords_${DB_SECTOR}_${COORD_FORMAT}    # these are hidden in portal interface
 REF_COORDS=${ref_path}/${REF_COORDS_BN}.tar.gz
 REF_IMAGES_BN=ref_images_${DB_SECTOR}_${COORD_FORMAT}    # these are hidden in portal interface
 REF_IMAGES=${ref_path}/${REF_IMAGES_BN}.tar.gz
-
-#REF_COORDS=${ref_coords}    # these are hidden in portal interface
-#REF_COORDS_BN="$(echo ${ref_coords} | cut -d '.' -f1 )"
-#REF_IMAGES=${ref_images}    # these are hidden in portal interface
-#REF_IMAGES_BN="$(echo ${ref_images} | cut -d '.' -f1 )"
 
 
 # Unpack inputs
@@ -61,29 +59,20 @@ ln -s /tmp/${REF_COORDS_BN} ref_coords   # so voxelwise.py can link to just 'ref
 tar -xzf ${REF_IMAGES} -C /tmp/
 ln -s /tmp/${REF_IMAGES_BN} ref_images
 
-OUTPUT="final_output"
+OUTPUT="output"
 mkdir ${OUTPUT}
 
 
-# Log commands, timing, run job
-echo "================================================================"
-echo -n "Pulling container, "
-date
-echo "CONTAINER = singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}"
-echo "================================================================"
-singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
-
-
-# Step 1: Generate ROIs from Coords       # pull this out and make it a utility later
+# Step 0: Generate ROIs from Coords       # pull this out and make it a utility later
 # will generate a bunch of nii.gz text files in the output folder
-#CMD1="bash /MACM/coords_j_1mm_goodRegExp.sh"
-#OPT1="${INPUT} ${RADIUS} MNI152_T1_1mm_brain.nii.gz output "
+#CMD0="bash /MACM/coords_j_1mm_goodRegExp.sh"
+#OPT0="${INPUT} ${RADIUS} MNI152_T1_1mm_brain.nii.gz output "
 #echo "================================================================"
 #echo -n "starting step 1: Split experiments, "
 #date
-#echo "COMMAND1 = singularity exec ${SING_IMG} ${CMD1} ${OPT1}"
+#echo "COMMAND0 = singularity exec ${SING_IMG} ${CMD0} ${OPT0}"
 #echo "================================================================"
-#singularity --quiet exec ${SING_IMG} ${CMD1} ${OPT1}
+#singularity --quiet exec ${SING_IMG} ${CMD0} ${OPT0}
 
 # input 1: text file name
 # input 2: radius
@@ -91,27 +80,27 @@ singularity pull --disable-cache ${SING_IMG} docker://${CONTAINER_IMAGE}
 
 
 # Step 1: Create images for each ROI
-singularity exec ${SING_IMG} cp /MACM/spheres.py . # spheres.py wants to be in local dir
+cp /app/src/MACM/spheres.py . # spheres.py wants to be in local dir
 CMD1=" python3 spheres.py "
 OPT1=" ${COORD_FORMAT_FOR_SPHERES} -r=${RADIUS} ${INPUT_ROIS} "
 echo "================================================================"
 echo -n "Starting step 1: Generating images from ROIs, "
 date
-echo "COMMAND = singularity exec ${SING_IMG} ${CMD1} ${OPT1}"
+echo "COMMAND = ${CMD1} ${OPT1}"
 echo "================================================================"
-singularity exec ${SING_IMG} ${CMD1} ${OPT1}
+${CMD1} ${OPT1}
 
 
 # Step 2: Identify overlapping coordinates from appropriate database
-singularity exec ${SING_IMG} cp /MACM/voxelwise.py . # voxelwise.py wants to be in local dir
+cp /app/src/MACM/voxelwise.py . # voxelwise.py wants to be in local dir
 CMD2=" python3 voxelwise.py "
 OPT2=" ref_images/mar_4d -1d ${INPUT_ROIS_BN}/*.nii.gz "
 echo "================================================================"
 echo -n "Starting step 2: Identifying coordinates for MACM, "
 date
-echo "COMMAND = singularity exec ${SING_IMG} ${CMD2} ${OPT2}"
+echo "COMMAND = ${CMD2} ${OPT2}"
 echo "================================================================"
-singularity exec ${SING_IMG} ${CMD2} ${OPT2}
+${CMD2} ${OPT2}
 
 
 echo ""
@@ -130,9 +119,9 @@ OPT3=" ${INPUT_ROIS_BN}/${ANNOTATION_FILE}_macm.txt -fwe=0.05 -perm=5000 -minVol
 echo "================================================================"
 echo -n "Starting step 3: Running GingerALE to produce MA maps, "
 date
-echo "COMMAND = singularity exec ${SING_IMG} ${CMD3} ${OPT3}"
+echo "COMMAND = ${CMD3} ${OPT3}"
 echo "================================================================"
-numactl -C 0-7 singularity exec ${SING_IMG} ${CMD3} ${OPT3}
+${CMD3} ${OPT3}
 
 
 done # end for each ANNOTATION_FILE
@@ -142,14 +131,14 @@ done # end for each ANNOTATION_FILE
 echo "================================================================"
 echo -n "Starting step 4: Running cross correlation, "
 date
-echo "COMMAND = singularity exec ${SING_IMG} fslmeants -i ALE -m ROI"
+echo "COMMAND = fslmeants -i ALE -m ROI"
 echo "================================================================"
 for ALE_FILE in ` ls ${INPUT_ROIS_BN} | grep FWE | grep ALE.nii `
 do
     echo "Sampling ALE values at all ROIs from $ALE_FILE"
     for ROI_FILE in ` ls ${INPUT_ROIS_BN} | grep nii.gz `
     do
-        singularity exec macm_1.0.0.sif fslmeants -i ${INPUT_ROIS_BN}/$ALE_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_ALE_SAMPLING_${ROI_FILE%.nii.gz}.txt
+        fslmeants -i ${INPUT_ROIS_BN}/$ALE_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_ALE_SAMPLING_${ROI_FILE%.nii.gz}.txt
     done
     paste ${OUTPUT}/meants_roi_ALE_SAMPLING*.txt > ${OUTPUT}/allmeants_roi_ALE_SAMPLED_from_${ALE_FILE%.nii}.txt
     paste ${OUTPUT}/allmeants_roi_ALE_SAMPLED_from_${ALE_FILE%.nii}.txt >> ${OUTPUT}/final_macm_ale_samples.txt
@@ -159,7 +148,7 @@ do
     echo "Sampling P Values at all ROIs from $PVAL_FILE"
     for ROI_FILE in ` ls ${INPUT_ROIS_BN} | grep nii.gz `
     do
-        singularity exec macm_1.0.0.sif fslmeants -i ${INPUT_ROIS_BN}/$PVAL_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_PVal_${ROI_FILE%.nii.gz}.txt
+        fslmeants -i ${INPUT_ROIS_BN}/$PVAL_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_PVal_${ROI_FILE%.nii.gz}.txt
     done
     paste ${OUTPUT}/meants_roi_PVal*.txt > ${OUTPUT}/allmeants_roi_PVal_SAMPLED_from_${PVAL_FILE%.nii}.txt
     paste ${OUTPUT}/allmeants_roi_PVal_SAMPLED_from_${PVAL_FILE%.nii}.txt >> ${OUTPUT}/final_macm_pval_samples.txt
@@ -169,7 +158,7 @@ do
     echo "Sampling Z Values at all ROIs from $Z_FILE"
     for ROI_FILE in ` ls ${INPUT_ROIS_BN} | grep nii.gz `
     do
-        singularity exec macm_1.0.0.sif fslmeants -i ${INPUT_ROIS_BN}/$Z_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_Z_${ROI_FILE%.nii.gz}.txt
+        fslmeants -i ${INPUT_ROIS_BN}/$Z_FILE -m ${INPUT_ROIS_BN}/$ROI_FILE -o ${OUTPUT}/meants_roi_Z_${ROI_FILE%.nii.gz}.txt
     done
     paste ${OUTPUT}/meants_roi_Z*.txt > ${OUTPUT}/allmeants_roi_Z_SAMPLED_from_${Z_FILE%.nii}.txt
     paste ${OUTPUT}/allmeants_roi_Z_SAMPLED_from_${Z_FILE%.nii}.txt >> ${OUTPUT}/final_macm_Z_samples.txt

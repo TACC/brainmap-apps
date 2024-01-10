@@ -11,9 +11,8 @@ ENV PATH="${PATH}:/opt/miniconda3/bin"
 
 RUN pip3 install numpy scipy nibabel==4.0.2
 
-COPY src/GingerALE.jar /app/GingerALE.jar
-COPY src/MACM /MACM
+ADD ./src /app/src
+ADD ./run.sh /app
+RUN chmod +x /app/run.sh
 
-RUN chmod +rx /app/GingerALE.jar && \
-    chmod +rx /MACM/*
-
+ENTRYPOINT ["/bin/bash", "/app/run.sh"]
