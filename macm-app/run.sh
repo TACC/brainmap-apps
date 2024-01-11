@@ -81,6 +81,7 @@ mkdir ${OUTPUT}
 
 # Step 1: Create images for each ROI
 cp /app/src/MACM/spheres.py . # spheres.py wants to be in local dir
+cp -r /app/src/masks .
 CMD1=" python3 spheres.py "
 OPT1=" ${COORD_FORMAT_FOR_SPHERES} -r=${RADIUS} ${INPUT_ROIS} "
 echo "================================================================"
