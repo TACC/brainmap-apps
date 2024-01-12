@@ -1,7 +1,11 @@
 FROM wjallen/fsl:6.0.5
 
+RUN yum install -y numactl && \
+    yum clean all
+
 RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm && \
-    rpm -Uvh jdk-17_linux-x64_bin.rpm
+    rpm -Uvh jdk-17_linux-x64_bin.rpm && \
+    rm /jdk-17_linux-x64_bin.rpm
 
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     sh Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3 && \
@@ -10,8 +14,6 @@ RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh &
 ENV PATH="${PATH}:/opt/miniconda3/bin"
 
 RUN pip3 install numpy scipy nibabel==4.0.2
-RUN yum install -y numactl && \
-    yum clean all
 
 ADD ./src /app/src
 ADD ./run.sh /app
