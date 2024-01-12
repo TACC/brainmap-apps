@@ -103,7 +103,7 @@ if not fociName:
 	print("\t...No foci text file input given")
 	quit
 
-with open(fociName, 'r') as fociFile:
+with open(fociName, 'rb') as fociFile:
 	fociData = fociFile.readlines()
 print("\t...Read {0} lines in {1}".format(len(fociData), fociName))
 
