@@ -80,7 +80,7 @@ mkdir ${OUTPUT}
 
 
 # Step 1: Create images for each ROI
-cp /app/src/MACM/spheres.py . # spheres.py wants to be in local dir
+cp /app/src/MACM/spheres.py .  # spheres.py wants to be in local dir
 cp -r /app/src/masks .
 CMD1=" python3 spheres.py "
 OPT1=" ${COORD_FORMAT_FOR_SPHERES} -r=${RADIUS} ${INPUT_ROIS} "
@@ -93,7 +93,7 @@ ${CMD1} ${OPT1}
 
 
 # Step 2: Identify overlapping coordinates from appropriate database
-cp /app/src/MACM/voxelwise.py . # voxelwise.py wants to be in local dir
+cp /app/src/MACM/voxelwise.py .  # voxelwise.py wants to be in local dir
 CMD2=" python3 voxelwise.py "
 OPT2=" ref_images/mar_4d -1d ${INPUT_ROIS_BN}/*.nii.gz "
 echo "================================================================"
@@ -115,15 +115,15 @@ for ANNOTATION_FILE in ` ls ${INPUT_ROIS_BN} | grep nii.gz | awk -F. '{print $1}
 do
 
 # Step 3: Run GingerALE MA on resulting text to get ALE image
-PRE3=" numactl -C 0,7 "
-CMD3=" java -cp /app/GingerALE.jar org.brainmap.meta.getALE2 "
+PRE3=" numactl -C 0-7 "
+CMD3=" java -cp /app/src/GingerALE.jar org.brainmap.meta.getALE2 "
 OPT3=" ${INPUT_ROIS_BN}/${ANNOTATION_FILE}_macm.txt -fwe=0.05 -perm=5000 -minVol=9 -mask=masks/${MASK_FILE} -nonAdd "
 echo "================================================================"
 echo -n "Starting step 3: Running GingerALE to produce MA maps, "
 date
 echo "COMMAND = ${PRE3} ${CMD3} ${OPT3}"
 echo "================================================================"
-${PRE3} ${CMD3} ${OPT3}
+${PRE3} ${CMD3} ${OPT3} 
 
 
 done # end for each ANNOTATION_FILE
@@ -178,9 +178,6 @@ date
 
 rm ref_images
 rm ref_coords
-
-#rm ${REF_COORDS}
-#rm ${REF_IMAGES}
 
 rm -rf /tmp/${REF_COORDS_BN}
 rm -rf /tmp/${REF_IMAGES_BN}

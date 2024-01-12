@@ -10,6 +10,8 @@ RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh &
 ENV PATH="${PATH}:/opt/miniconda3/bin"
 
 RUN pip3 install numpy scipy nibabel==4.0.2
+RUN yum install -y numactl && \
+    yum clean all
 
 ADD ./src /app/src
 ADD ./run.sh /app

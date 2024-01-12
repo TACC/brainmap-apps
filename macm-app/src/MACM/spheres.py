@@ -103,7 +103,9 @@ if not fociName:
 	print("\t...No foci text file input given")
 	quit
 
-with open(fociName, 'rb') as fociFile:
+# for some reason was seeing input as bytes inside container
+#with open(fociName, 'r') as fociFile:
+with open(fociName, 'rb') as fociFile:   # WJA
 	fociData = fociFile.readlines()
 print("\t...Read {0} lines in {1}".format(len(fociData), fociName))
 
@@ -183,12 +185,16 @@ for ROI in roiData:
 	print('\t...Voxel count:', roiVoxelCount)
 	
 	# save ROI
-	roiFile = os.path.join(outputDir, name + fileExt)
+    # was giving error about mixing strings and bytes when inside container
+	#roiFile = os.path.join(outputDir, name + fileExt)
+	roiFile = os.path.join(outputDir.encode('ascii'), name + fileExt.encode('ascii'))  # WJA
 	print('\t...Output name:', roiFile)
 	
 	header = nib.Nifti1Image(roiCopy, maskNii.affine, dtype=np.uint8)
 	print('\t...Created ROI header')
 	
-	nib.save(header, roiFile)
-	print('\t...Saved {0} with {1} voxels'.format(roiFile, roiVoxelCount))
+	#nib.save(header, roiFile)
+	nib.save(header, roiFile.decode())  # WJA
+	#print('\t...Saved {0} with {1} voxels'.format(roiFile, roiVoxelCount))
+	print('\t...Saved {0} with {1} voxels'.format(roiFile.decode(), roiVoxelCount))  # WJA
 
