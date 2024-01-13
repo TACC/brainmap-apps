@@ -42,8 +42,8 @@ fi
 # Pull some assets out of container, input file needs to be in asset dir
 cp -r /app/src/xGTM_portal .
 cp -r /app/src/gtm.m .
-mv ${foci_text} xGTM_portal/
-chmod +rx xGTM_portal/${foci_text}
+mv ${INPUT} xGTM_portal/
+chmod +rx xGTM_portal/${INPUT}
 
 
 # Log commands, timing, run job
@@ -51,7 +51,7 @@ echo -n "starting: "
 date
 COMMAND=" /scratch/tacc/apps/matlab/2022b/bin/matlab "
 PARAMS=" -nodesktop -nodisplay -nosplash "
-MATLAB_FUNC="gtm ${PWD}/xGTM_portal/ ${foci_text} ${RADIUS} ${ALE_THRESHOLD} ${FILTER}"
+MATLAB_FUNC="gtm ${PWD}/xGTM_portal/ ${INPUT} ${RADIUS} ${ALE_THRESHOLD} ${FILTER}"
 echo "================================================================"
 echo "COMMAND = ${COMMAND} ${PARAMS} -r ' ${MATLAB_FUNC} ' "
 echo "================================================================"
@@ -60,7 +60,7 @@ ${COMMAND} ${PARAMS} -r " ${MATLAB_FUNC} "
 
 # Assemble and clean up output
 mkdir output/
-_FOCI_TEXT="${foci_text}"
+_FOCI_TEXT="${INPUT}"
 mv xGTM_portal/${_FOCI_TEXT} ./
 mv xGTM_portal/${_FOCI_TEXT%.*}* ./output/
 
