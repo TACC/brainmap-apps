@@ -1,0 +1,117 @@
+{
+    "id": "wallen-sdm-gui",
+    "version": "6.23beta",
+    "description": "SDM: Neuroimaging software library including meta-analytic methods for fMRI, VBM, DTI and PET and other tools. NOTE: After submitting the job, navigate to the History > Jobs tab, and when the job begins Running you will find an 'Open Session' button with connection information.",
+    "owner": "${apiUserId}",
+    "enabled": true,
+    "runtime": "SINGULARITY",
+    "runtimeVersion": null,
+    "runtimeOptions": [
+        "SINGULARITY_RUN"
+    ],
+    "containerImage": "docker://wjallen/sdm-gui:6.23beta",
+    "jobType": "BATCH",
+    "maxJobs": -1,
+    "maxJobsPerUser": -1,
+    "strictFileInputs": true,
+    "jobAttributes": {
+        "description": "SDM: Seed-based d Mapping",
+        "dynamicExecSystem": false,
+        "execSystemConstraints": null,
+        "execSystemId": "tacc.lonestar6.wallen",
+        "execSystemExecDir": "${JobWorkingDir}",
+        "execSystemInputDir": "${JobWorkingDir}",
+        "execSystemOutputDir": "${JobWorkingDir}",
+        "execSystemLogicalQueue": "development",
+        "archiveSystemId": "tacc.lonestar6.wallen",
+        "archiveSystemDir": "HOST_EVAL($STOCKYARD)/tapis/archive/${JobCreateDate}/${JobName}-${JobUUID}",
+        "archiveOnAppError": true,
+        "isMpi": false,
+        "mpiCmd": null,
+        "cmdPrefix": null,
+        "nodeCount": 1,
+        "coresPerNode": 1,
+        "memoryMB": 100,
+        "maxMinutes": 120,
+        "subscriptions": [],
+        "tags": [],
+        "fileInputs": [],
+        "fileInputArrays": [],
+        "parameterSet": {
+            "appArgs": [],
+            "containerArgs": [
+                {
+                    "name": "Interactive Session and TACC Module Mounts",
+                    "description": "Mount the required folders in order for TAP, DCV, VNC, and TACC modules to function.",
+                    "inputMode": "FIXED",
+                    "arg": "--bind /bin,/lib,/lib64,/share,/run,/opt/apps,/usr/lib,/usr/lib64,/usr/libexec,/usr/bin,/usr/etc,/usr/include,/usr/share,/usr/sbin,/usr/src",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "schedulerOptions": [
+                {
+                    "name": "brainmap-gui",
+                    "description": "Scheduler Profile for BrainMap GUI Apps",
+                    "inputMode": "FIXED",
+                    "arg": "--tapis-profile brainmap-gui",
+                    "notes": {
+                        "isHidden": true
+                    }
+                },
+                {
+                    "name": "TACC Interactive Session Substrings",
+                    "description": "VNC and DCV sessions require the substrings 'tap_' and '-dcvserver' in the slurm job name in order to function.",
+                    "inputMode": "FIXED",
+                    "arg": "--job-name ${JobName}-dcvserver-tap_",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "envVariables": [
+                {
+                    "key": "_XTERM_CMD",
+                    "value": "LD_LIBRARY_PATH=/app/src/SdmPsiGui-linux64-v6.23/bin/linux64 /app/src/SdmPsiGui-linux64-v6.23/bin/linux64/SdmPsiGui",
+                    "description": "Command passed to XTERM, launched within the interactive session.",
+                    "inputMode": "FIXED",
+                    "notes": {
+                        "isHidden": true
+                    }
+                },
+                {
+                    "key": "APPEND_PATH",
+                    "value": "$PATH",
+                    "description": "Append host $PATH to Singularity container default $PATH.",
+                    "inputMode": "FIXED",
+                    "notes": {
+                        "isHidden": true
+                    }
+                }
+            ],
+            "archiveFilter": {
+                "includes": [],
+                "excludes": [],
+                "includeLaunchFiles": true
+            }
+        }
+    },
+    "tags": [
+        "portalName: CEP",
+        "portalName: Brainmap"
+    ],
+    "notes": {
+        "label": "SDM - GUI",
+        "helpUrl": "https://www.sdmproject.com/",
+        "hideNodeCountAndCoresPerNode": true,
+        "isInteractive": true,
+        "icon": null,
+        "category": "Visualization",
+        "queueFilter": [
+            "development",
+            "normal",
+            "vm-small"
+        ]
+    }
+}
