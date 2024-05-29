@@ -559,7 +559,7 @@ def createVoxels1D(outDir):
     print("\nCreating {0} voxelwise 1D images:".format(nVox))
     loadSeriesImage(imagePrefix)
 
-    with Pool(processes=8) as pool:    # WJA multiprocessing 
+    with Pool(processes=2) as pool:    # WJA multiprocessing 
         pool.starmap(saveNiftiFiles1D, [ (i, outDir) for i in range(nVox) ] )
     print("\t...Finished saving all voxels")
     
@@ -730,7 +730,7 @@ def createVoxelsCC(outDir):
     print("\nCreating {0} voxelwise correlation images:".format(nVox))
     loadSeriesImage(imagePrefix)
 
-    with Pool(processes=8) as pool:    # WJA multiprocessing 
+    with Pool(processes=2) as pool:    # WJA multiprocessing 
         pool.starmap(saveNiftiFilesCC, [ (i, nVox, outDir) for i in range(nVox) ] )
     print("\t...Finished saving all voxels")
 
