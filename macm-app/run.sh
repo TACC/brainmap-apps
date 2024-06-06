@@ -117,7 +117,7 @@ do
 # Step 3: Run GingerALE MA on resulting text to get ALE image
 PRE3=" numactl -C 0-7 "
 CMD3=" java -cp /app/src/GingerALE.jar org.brainmap.meta.getALE2 "
-OPT3=" ${INPUT_ROIS_BN}/${ANNOTATION_FILE}_macm.txt -fwe=0.05 -perm=5000 -minVol=9 -mask=masks/${MASK_FILE} -nonAdd "
+OPT3=" ${INPUT_ROIS_BN}/${ANNOTATION_FILE}_macm.txt -mask=masks/${MASK_FILE} -nonadd "
 echo "================================================================"
 echo -n "Starting step 3: Running GingerALE to produce MA maps, "
 date
