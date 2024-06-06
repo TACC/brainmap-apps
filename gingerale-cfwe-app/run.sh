@@ -1,7 +1,7 @@
 #!/bin/bash
 
 p=$1
-fwe=$2
+clust=$2
 perm=$3
 coord_space=$4
 mask_size=$5
@@ -27,12 +27,12 @@ else
 	PARAMS="${PARAMS} -p=0.01 "
 fi
 
-# Get fwe
-if [ -n "${fwe}" ];
+# Get clust
+if [ -n "${clust}" ];
 then
-	PARAMS="${PARAMS} -fwe=${fwe} "
+	PARAMS="${PARAMS} -clust=${clust} "
 else
-	PARAMS="${PARAMS} -few=0.05 "
+	PARAMS="${PARAMS} -clust=0.05 "
 fi
 
 # Get number of permutations
@@ -60,7 +60,7 @@ PARAMS="${PARAMS} -nonAdd "
 # Add a command to get peaks
 COMMAND2=" java -cp /app/src/GingerALE.jar org.brainmap.meta.getClustersStats "
 FILE_PREFIX=`basename ${foci_text} .txt`
-PARAMS2=" ${FILE_PREFIX}_*FWE*_ALE.nii ${FILE_PREFIX}_*FWE*_clust.nii "
+PARAMS2=" ${FILE_PREFIX}_*_C*_ALE.nii ${FILE_PREFIX}_*_C*_clust.nii "
 
 if [ ${coord_space} == "Tal_wb" ];
 then
