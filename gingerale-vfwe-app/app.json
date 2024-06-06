@@ -28,7 +28,7 @@
       "archiveOnAppError": true,
       "isMpi": false,
       "mpiCmd": null,
-      "cmdPrefix": "numactl -C 0,15",
+      "cmdPrefix": "numactl -C 0-7",
       "nodeCount": 1,
       "coresPerNode": 1,
       "memoryMB": 100,
@@ -64,7 +64,7 @@
                 "notes": {}
               },
               {
-                "name": "Family-wise Error (-fwe)",
+                "name": "Volume Family-wise Error (-fwe)",
                 "description": "Permutation-based: requires -perm parameter",
                 "inputMode": "REQUIRED",
                 "arg": "0.05",

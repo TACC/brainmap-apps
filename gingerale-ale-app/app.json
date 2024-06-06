@@ -28,7 +28,7 @@
         "archiveOnAppError": true,
         "isMpi": false,
         "mpiCmd": null,
-        "cmdPrefix": "numactl -C 0,7",
+        "cmdPrefix": "numactl -C 0-7",
         "nodeCount": 1,
         "coresPerNode": 1,
         "memoryMB": 100,
