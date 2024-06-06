@@ -85,7 +85,7 @@ class NullStudyGenerator:
         dfNull['numFoci'] = list(self.simFoci.sample(frac=1))
         dfNull['subjects'] = self.simSizes
         dfNull = self._expand_dataframe(dfNull)
-        dfCoordinates = pd.read_csv('within_' + self.reference + '.txt', header=None, names=['coordinates'])
+        dfCoordinates = pd.read_csv('/app/src/FSN/within_' + self.reference + '.txt', header=None, names=['coordinates'])
         dfNull['coordinates'] = dfCoordinates['coordinates'].sample(n=dfNull.shape[0]).values
 
         self.dfNull = dfNull

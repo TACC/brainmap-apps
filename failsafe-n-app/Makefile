@@ -1,20 +1,15 @@
-APPID ?= wallen-failsafe-n-1.0.0
-
-list:
-	tapis apps search --id start wallen
+APPID ?= wallen-failsafe-n
+APPVER ?= 3.0.2
+DOCKERID ?= wjallen/failsafe-n:1.0.0
 
 deploy:
-	tapis apps deploy -W . -F app.json --ini project.ini --no-build --no-push
-
-update:
-	tapis apps update -F app.json --ini project.ini ${APPID}
-
+	python3 ../utils/manage_apps.py app.json 
 
 build:
-	docker build -t wjallen/failsafe-n:1.0.0 .
+	docker build -t $(DOCKERID) .
 
-run:
-	docker run --rm -it wjallen/failsafe-n:1.0.0 /bin/bash
+test:
+	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
 push:
-	docker push wjallen/failsafe-n:1.0.0
+	docker push $(DOCKERID)
