@@ -1,6 +1,6 @@
 {
     "isPublic": false,
-    "id": "tacc.lonestar6.${apiUserId}",
+    "id": "tacc.lonestar6.wallen",
     "description": "System for running jobs on the Lonestar6 HPC system.",
     "systemType": "LINUX",
     "host": "ls6.tacc.utexas.edu",
