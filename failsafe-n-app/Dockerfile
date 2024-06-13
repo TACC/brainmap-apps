@@ -1,7 +1,7 @@
 FROM openjdk:17.0.2-jdk
 
 RUN microdnf upgrade && \
-    microdnf install libXext libXrender libXtst wget && \
+    microdnf install libXext libXrender libXtst numactl wget && \
     microdnf clean all
 
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
