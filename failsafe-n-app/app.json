@@ -1,7 +1,7 @@
 {
   "id": "wallen-failsafe-n",
   "version": "1.0.0",
-  "description": "The 'Failsafe N' is the number of additional null studies that can be added before the results of the meta-analysis become insignificant (P>0.05). This application performs pseudorandom sampling of input data to generate 'noise' data, which is added back into the input. The final output is the number of null studies required to make each cluster disappear.",
+  "description": "The 'Failsafe N' is the number of additional null studies that can be added to the input data before the results of the meta-analysis become insignificant (P>0.05). This application performs pseudorandom sampling of input data to generate 'noise' data, which is added back into the input. Sampling is performed over the range 6%-30% noise data. The final output is the number of null studies required to make each cluster disappear.",
   "owner": "${apiUserId}",
   "enabled": true,
   "runtime": "SINGULARITY",
