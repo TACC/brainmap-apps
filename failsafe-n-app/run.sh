@@ -78,7 +78,7 @@ date
 echo "================================================================"
 echo "COMMAND1 = ${COMMAND1} ${foci_text} ${PARAMS1}"
 echo "================================================================"
-numactl -C 0-7 ${COMMAND} ${foci_text} ${PARAMS1}
+numactl -C 0-7 ${COMMAND1} ${foci_text} ${PARAMS1}
 
 echo "================================================================"
 echo "COMMAND2 = ${COMMAND2} ${PARAMS2} "
@@ -129,6 +129,12 @@ do
 done
 sleep 30
 
+
+# Clean up outputs we don't need
+mkdir nii-files/
+mv *.nii nii-files/
+tar -cvzf nii-files.tar.gz nii-files/
+rm -rf nii-files/
 
 
 # Run FSN summarizer utility one time to compile all results into table
