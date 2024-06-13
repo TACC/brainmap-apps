@@ -18,6 +18,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics.pairwise import euclidean_distances
 import sys
 import os
+import glob
 
 #generates text file to be inputed by user into ALE
 def generateNewFile(filepath, data, num:int):
@@ -35,8 +36,8 @@ def generateNewFile(filepath, data, num:int):
 
 #Input: knn classifier and number of clusters that were present in original ALE file. Users are asked to input the location of the new ALE output
 #Output: a list whose length corresponds to the number of clusters. Clusters that were detected in the new ALE file are saved as 1, otherwise clusters that were eliminated are saved as 0
-def compareClusters(knn,numClusters,original):
-    filepath = input('Enter filepath for xls sheet: ')
+def compareClusters(knn,numClusters,original,null_peaks):
+    filepath = null_peaks
 
     newdf = pd.read_csv(filepath, delimiter='\t')
     if newdf.empty:
@@ -54,7 +55,6 @@ def compareClusters(knn,numClusters,original):
     lst=np.zeros(numClusters)
     lst[np.unique(newdf['predicted clusters'])-1]=1
     return lst
-
 
 #takes in a a row from testdf, returns true if FSN is determined to be greater than the upper bound, lower than the lower bound, or if FSN has been found   
 #also writes the FSN into a text file
@@ -122,8 +122,10 @@ def main():
 
     elif sys.argv[1] == 'compare':
 
-        #filepath = '/Users/louiszhang/Documents/GitHub/ALE-FailSafe-N/EickhoffHBM09.txt'
-        clustersdf = pd.read_csv('/Users/louiszhang/Documents/GitHub/ALE-FailSafe-N/EickhoffHBM09_C01_1k_peaks.xls',delimiter='\t')
+        #filepath = '/app/src/FSN/test/EickhoffHBM09_p01_C05_500_ALE_peaks.tsv'
+        filepath = sys.argv[2]
+
+        clustersdf = pd.read_csv(filepath,delimiter='\t')
         num_clusters = clustersdf['Cluster #'].nunique()
 
         grouped=clustersdf.groupby('Cluster #')
@@ -132,10 +134,17 @@ def main():
         knn=KNeighborsClassifier(n_neighbors=grouped.size().min())
         knn.fit(clustersdf[['x','y','z']],clustersdf['Cluster #'])
 
+        filedir=os.path.dirname(filepath)
+        filename=os.path.basename(filepath)
+        fileprefix=filename.split('_')[0]
+        filesuffix=filename.split('_',1)[1]
+        null_filename_list=glob.glob(f'{filedir}/{fileprefix}_null*.tsv')
+        nums = [ int(os.path.basename(item).split('null')[1].split('_')[0]) for item in null_filename_list  ]
+        nums.sort()
 
         #create testdf that contains each of the values to be tested
-        minStudies=nullStudy.minStudies
-        maxStudies=nullStudy.numStudies
+        minStudies=nums[0]
+        maxStudies=nums[-1]
         columnNames=list(range(minStudies, maxStudies+1))
         columnNames.insert(0,'cluster')
         testdf=pd.DataFrame(columns=columnNames)
@@ -163,32 +172,19 @@ def main():
 # =============================================================================
         #run iterative binary search while storing previous results in testdf.
         for i in range(num_clusters):
+            for j in nums:
 
-            row=testdf.iloc[i]
-            minStudies,maxStudies=minMax(row)
-            while not checkCompleted(row,filepath,i+1):
-                print('which row: ',i)
-                mid=(minStudies+maxStudies)//2
-                if not testdf[mid].isna().all():
-                    mid+=1
-                nullStudy.numStudies=mid
-                print('added null:',nullStudy.numStudies)
-                print('min studies to add:',minStudies)
-                print('max studies to add:',maxStudies)
-                nullStudy.generate_null_studies()
-                generateNewFile(filepath, data)
-                comparison=compareClusters(knn,num_clusters,clustersdf)
-                testdf[nullStudy.numStudies]=comparison
+                row=testdf.iloc[i]
+                minStudies,maxStudies=minMax(row)
+                null_peaks=f'{filedir}/{fileprefix}_null{j}_{filesuffix}'
+                comparison=compareClusters(knn,num_clusters,clustersdf,null_peaks)
+                testdf[j]=comparison
 
-                if comparison[i]==0:
-                    maxStudies=nullStudy.numStudies-1
-                else:
-                    minStudies=nullStudy.numStudies+1
                 row=testdf.iloc[i]
                 testdf=testdf.apply(correctdf,axis=1,result_type='broadcast')
-                display(testdf[nullStudy.numStudies])
-                display(testdf)
-        testdf.to_csv('data.txt',sep='\t',index=False)
+        testdf.to_csv('comparison_matrix.txt',sep='\t',index=False)
+        print('Comparison matrix written to comparison_matrix.txt'))
+        print(testdf)
 
     else:
         print('Usage:')
