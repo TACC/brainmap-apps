@@ -86,7 +86,7 @@ echo "================================================================"
 numactl -C 0-7 ${COMMAND2} ${PARAMS2}
 
 
-original_peaks_file=$(find * -type f | grep -v 'peaks.tsv')
+original_peaks_file=$(find * -type f | grep 'peaks.tsv')
 
 # After running first iteration of ALE, Feed original foci_text into FSN script
 # to generate null studies
@@ -135,14 +135,14 @@ sleep 30
 # After running all iterations of ALE, Feed original peaks file into FSN script
 # to compare clusters
 echo "================================================================"
-echo "COMMAND3 = python3 /app/src/FSN.py compare ${original_peaks_file} "
+echo "COMMAND3 = python3 /app/src/FSN.py compare ./${original_peaks_file} "
 echo "================================================================"
-python3 /app/src/FSN/FSN.py compare ${original_peaks_file}
+python3 /app/src/FSN/FSN.py compare ./${original_peaks_file}
 
 
 # Clean up outputs we don't need
 mkdir null-study-files/
-mv *null* null-study-files/
+mv *_null* null-study-files/
 tar -cvzf null-study-files.tar.gz null-study-files/
 rm -rf null-study-files/
 

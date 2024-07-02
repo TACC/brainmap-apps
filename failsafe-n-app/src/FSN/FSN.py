@@ -183,7 +183,7 @@ def main():
                 row=testdf.iloc[i]
                 testdf=testdf.apply(correctdf,axis=1,result_type='broadcast')
         testdf.to_csv('comparison_matrix.txt',sep='\t',index=False)
-        print('Comparison matrix written to comparison_matrix.txt'))
+        print('Comparison matrix written to comparison_matrix.txt')
         print(testdf)
 
     else:
