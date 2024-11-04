@@ -16,4 +16,4 @@ push:
 
 gui:
 	xhost + 127.0.0.1
-	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=/app/datalad-gooey/bin/datalad-gooey $(DOCKERID)
+	docker run -e DISPLAY=host.docker.internal:0 --entrypoint=/app/miniconda3/bin/datalad-gooey $(DOCKERID)

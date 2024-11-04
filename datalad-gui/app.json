@@ -73,7 +73,7 @@
             "envVariables": [
                 {
                     "key": "_XTERM_CMD",
-                    "value": "/app/datalad-gooey/bin/python3 /app/datalad-gooey/bin/datalad-gooey",
+                    "value": "/app/miniconda3/bin/datalad-gooey",
                     "description": "Command passed to XTERM, launched within the interactive session.",
                     "inputMode": "FIXED",
                     "notes": {

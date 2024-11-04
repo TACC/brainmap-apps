@@ -1,27 +1,31 @@
-FROM python:3.9.18-bullseye
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    freeglut3-dev \
     git \
-    libgtk-3-0 \
-    libgl1-mesa-glx \
+    libdbus-1-dev \
+    libfontconfig-dev \
+    libgl1-mesa-dev \
+    libxkbcommon-dev \
     libxcb-cursor-dev \
-    pyqt5-dev \
-    pyqt5-dev-tools \
+    qt6-base-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /app/ && \
-    python3 -m venv /app/datalad-gooey 
+RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    sh Miniconda3-latest-Linux-x86_64.sh -b -p /app/miniconda3 && \
+    rm /Miniconda3-latest-Linux-x86_64.sh
 
-ENV PATH="/app/datalad-gooey/bin:$PATH"
+ENV PATH="${PATH}:/app/miniconda3/bin"
 
-RUN pip install datalad==1.1.3 datalad-gooey==0.2.0
-RUN pip install datalad_next==0.6.3
+RUN pip3 install datalad==1.1.3 datalad-gooey==0.2.0
+RUN pip3 install datalad_next==0.6.3
+RUN pip3 install pyqt6==6.7.1
+
+ENV PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"
 
 ADD ./run.sh /app/run.sh
 
-RUN chmod -R go=u /app && \
-    chmod +x /app/run.sh
+RUN chmod +x /app/run.sh
 
 ENTRYPOINT ["/bin/bash", "/app/run.sh"]
 
