@@ -1,0 +1,56 @@
+{
+  "name": "sample_macm_job",
+  "appId": "macm",
+  "appVersion": "1.0.1",
+  "fileInputs": [
+    { 
+      "name": "Seed ROIs",
+      "description": "Tab separated file containing list of seed coordinates (annotated)",
+      "sourceUrl": "tapis://tacc.lonestar6.wallen/work/03439/wallen/tapis/test-data/macm/input_peaks_with_names_tal.tsv"
+    }
+  ],
+  "parameterSet": {
+    "appArgs" :[
+      {
+        "name": "Sector",
+        "description": "Choose a reference sector (VBM, VBP, or TA)",
+        "arg": "vbm",
+        "notes": {
+          "enum_values": [
+            { "vbm": "VBM" },
+            { "vbp": "VBP" },
+            { "func": "TA" }
+          ]
+        }
+      },
+      {
+        "name": "Radius (in mm)r",
+        "description": "Seed ROI radius. Recommend 6 mm for functional MACM, or 4 mm for structural MACM",
+        "arg": "4"
+      },
+      {
+        "name": "Coordinate Space",
+        "description": "Specify the format of the input foci data",
+        "arg": "Tal_wb",
+        "notes": {
+          "enum_values": [
+            { "Tal_wb": "Talairach" },
+            { "MNI152_wb": "MNI" }
+          ]
+        }
+      },
+      {
+        "name": "Mask Size",
+        "description": "Specify more conservative (smaller) or less conservative (dilated by 2mm) masks",
+        "arg": ".nii.gz",
+        "notes": {
+          "enum_values": [
+            { ".nii.gz": "More Conservative (Smaller)" },
+            { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
+          ]
+        }
+      }
+    ]
+  }
+}
+
