@@ -2,6 +2,8 @@
   "name": "sample_macm_job",
   "appId": "macm",
   "appVersion": "1.0.1",
+  "execSystemLogicalQueue": "development",
+  "maxMinutes": 120,
   "fileInputs": [
     { 
       "name": "Seed ROIs",
@@ -49,6 +51,11 @@
             { "_dil.nii.gz": "Less Conservative (Dilated 2mm)" }
           ]
         }
+      }
+    ],
+    "schedulerOptions": [
+      {
+        "arg": "-A IBN22007"
       }
     ]
   }
