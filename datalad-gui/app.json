@@ -44,7 +44,7 @@
                     "name": "Interactive Session and TACC Module Mounts",
                     "description": "Mount the required folders in order for TAP, DCV, VNC, and TACC modules to function.",
                     "inputMode": "FIXED",
-                    "arg": "--bind /bin,/lib,/lib64,/share,/run,/opt/apps,/usr/lib,/usr/lib64,/usr/libexec,/usr/bin,/usr/etc,/usr/include,/usr/share,/usr/sbin,/usr/src",
+                    "arg": "--bind /bin,/lib64,/share,/run,/opt/apps,/usr/lib,/usr/lib64,/usr/libexec,/usr/bin,/usr/etc,/usr/include,/usr/share,/usr/sbin,/usr/src",
                     "notes": {
                         "isHidden": true
                     }

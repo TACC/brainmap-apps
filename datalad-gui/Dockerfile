@@ -17,11 +17,14 @@ RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh &
 
 ENV PATH="${PATH}:/app/miniconda3/bin"
 
+RUN pip3 install pyqt6==6.7.1
 RUN pip3 install datalad==1.1.3 datalad-gooey==0.2.0
 RUN pip3 install datalad_next==0.6.3
-RUN pip3 install pyqt6==6.7.1
 
 ENV PYTHON_KEYRING_BACKEND="keyring.backends.null.Keyring"
+#ENV QT_PLUGIN_PATH="/usr/lib/x86_64-linux-gnu/qt6/plugins"
+ENV QT_PLUGIN_PATH="/app/miniconda3/lib/python3.12/site-packages/PySide6/Qt/plugins"
+ENV QT_DEBUG_PLUGINS=1
 
 ADD ./run.sh /app/run.sh
 
