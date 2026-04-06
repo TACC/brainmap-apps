@@ -8,6 +8,9 @@ deploy:
 build:
 	docker build -t $(DOCKERID) .
 
+buildx:
+	docker buildx build --platform linux/arm64,linux/amd64 -t $(DOCKERID) --push .
+
 test:
 	docker run --rm -it --entrypoint=/bin/bash $(DOCKERID)
 
